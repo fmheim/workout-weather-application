@@ -17,8 +17,8 @@
         android:ems="10"
         android:hint="@string/longitude_hint"
         android:inputType="numberDecimal"
-        android:textColor="#2F90AE"
-        android:textColorHint="#851E6075"
+        android:textColor="#35A0C1"
+        android:textColorHint="#B92A84A1"
         android:textSize="14sp"
         app:layout_constraintBottom_toTopOf="@+id/editText_latitude"
         app:layout_constraintStart_toStartOf="parent" />
@@ -33,8 +33,8 @@
         android:ems="10"
         android:hint="@string/latitude_hint"
         android:inputType="numberDecimal"
-        android:textColor="#2F90AE"
-        android:textColorHint="#851E6075"
+        android:textColor="#35A0C1"
+        android:textColorHint="#B92A84A1"
         android:textSize="14sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
@@ -49,12 +49,13 @@
         android:layout_marginEnd="21dp"
         android:layout_marginRight="21dp"
         android:layout_marginBottom="13dp"
-        android:text="Change Location"
+        android:text="@string/button_change_location"
         app:backgroundTint="#133742"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/editText_latitude"
-        app:layout_constraintTop_toBottomOf="@+id/recyclerView" />
+        app:layout_constraintTop_toBottomOf="@+id/recyclerView"
+        android:onClick="onChangeLocation"/>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"
@@ -68,10 +69,10 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView" />
+        app:layout_constraintTop_toBottomOf="@+id/textView_appovedTime" />
 
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/textView_appovedTime"
         android:layout_width="wrap_content"
         android:layout_height="17sp"
         android:text="@string/approved_time"

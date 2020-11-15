@@ -6,6 +6,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import se.kth.fmheim.workoutweather.R;
 import se.kth.fmheim.workoutweather.model.Weather;
 
 public class JSONParser {
@@ -30,6 +31,7 @@ public class JSONParser {
         String referenceTime = root.getString(REFERENCE_TIME);
         JSONArray timeSeries = root.getJSONArray(TIME_Series);
         Weather[] weatherForTenDaysArr = new Weather[timeSeries.length()]; //for each time entry new weather object
+        Log.d(LOG_TAG, "parser init ");
         for (int i = 0; i < timeSeries.length(); i++) {
             /*
             looping through packages of weather data for provided times
@@ -43,6 +45,7 @@ public class JSONParser {
             weatherForTenDaysArr[i].setApprovedTime(approvedTime);
             weatherForTenDaysArr[i].setReferenceTime(referenceTime);
 
+
             JSONArray parameters = parametersAtTime.getJSONArray(PARAMETERS); //one set of parameters for a valid time
 
             for (int j = 0; j < parameters.length(); j++) {
@@ -55,11 +58,13 @@ public class JSONParser {
                 //Log.d(LOG_TAG, Integer.toString(i) + Integer.toString(j));
                 if (TEMPERATURE.equals(parameter.getString(NAME))) {
                     weatherForTenDaysArr[i].setTemperature(values.getDouble(0));//
-                    Log.d(LOG_TAG, "Temp. assigned: " + Double.toString(values.getDouble(0)) );
+                    Log.d(LOG_TAG, "Temp. assigned: " + Double.toString(values.getDouble(0)));
                 }
                 if (CLOUD_COVERAGE.equals(parameter.getString(NAME))) {
-                    weatherForTenDaysArr[i].setClouds(getCloud(values.getInt(0)) );
-                    Log.d(LOG_TAG, "Cloud status assigned: " + Double.toString(values.getInt(0)) );
+                    weatherForTenDaysArr[i].setClouds(getCloud(values.getInt(0)));
+                    Log.d(LOG_TAG, "Cloud status assigned: " + Double.toString(values.getInt(0)));
+                    weatherForTenDaysArr[i].setSymbol(getSymbol(values.getInt(0), weatherForTenDaysArr[i].getTime()));
+                    weatherForTenDaysArr[i].setWorkoutRecommendation(getWorkoutRecommendation(values.getInt(0), weatherForTenDaysArr[i].getTemperature(),weatherForTenDaysArr[i].getTime()));
                 }
             }
         }
@@ -72,7 +77,7 @@ public class JSONParser {
 
     private static String getTime(String validTime) {
         String time = validTime.substring(11, 13);
-        if ("0".equals(time.substring(0,1)) ) {
+        if ("0".equals(time.substring(0, 1))) {
             time = time.substring(1);
         }
         return time;
@@ -141,5 +146,147 @@ public class JSONParser {
                 return "no info";
         }
     }
+
+    private static int getSymbol(int cloudValue, String time) {
+
+        boolean isDay = Integer.parseInt(time) > 5 && Integer.parseInt(time) < 18;
+        if (isDay) {
+            Log.d(LOG_TAG, "is day");
+            switch (cloudValue) {
+                case 1:
+                    return R.drawable.day_1;
+                case 2:
+                    return R.drawable.day_2;
+                case 3:
+                    return R.drawable.day_3;
+                case 4:
+                    return R.drawable.day_4;
+                case 5:
+                    return R.drawable.day_5;
+                case 6:
+                    return R.drawable.day_6;
+                case 7:
+                    return R.drawable.day_7;
+                case 8:
+                    return R.drawable.day_8;
+                case 9:
+                    return R.drawable.day_9;
+                case 10:
+                    return R.drawable.day_10;
+                case 11:
+                    return R.drawable.day_11;
+                case 12:
+                    return R.drawable.day_12;
+                case 13:
+                    return R.drawable.day_13;
+                case 14:
+                    return R.drawable.day_14;
+                case 15:
+                    return R.drawable.day_15;
+                case 16:
+                    return R.drawable.day_16;
+                case 17:
+                    return R.drawable.day_17;
+                case 18:
+                    return R.drawable.day_18;
+                case 19:
+                    return R.drawable.day_19;
+                case 20:
+                    return R.drawable.day_20;
+                case 21:
+                    return R.drawable.day_21;
+                case 22:
+                    return R.drawable.day_22;
+                case 23:
+                    return R.drawable.day_23;
+                case 24:
+                    return R.drawable.day_24;
+                case 25:
+                    return R.drawable.day_25;
+                case 26:
+                    return R.drawable.day_26;
+                case 27:
+                    return R.drawable.day_17;
+                default:
+                    return R.drawable.day_1; //sun is always shining for default :)
+            }
+        } else {
+            switch (cloudValue) {
+                case 1:
+                    return R.drawable.night_1;
+                case 2:
+                    return R.drawable.night_2;
+                case 3:
+                    return R.drawable.night_3;
+                case 4:
+                    return R.drawable.night_4;
+                case 5:
+                    return R.drawable.night_5;
+                case 6:
+                    return R.drawable.night_6;
+                case 7:
+                    return R.drawable.night_7;
+                case 8:
+                    return R.drawable.night_8;
+                case 9:
+                    return R.drawable.night_9;
+                case 10:
+                    return R.drawable.night_10;
+                case 11:
+                    return R.drawable.night_11;
+                case 12:
+                    return R.drawable.night_12;
+                case 13:
+                    return R.drawable.night_13;
+                case 14:
+                    return R.drawable.night_14;
+                case 15:
+                    return R.drawable.night_15;
+                case 16:
+                    return R.drawable.night_16;
+                case 17:
+                    return R.drawable.night_17;
+                case 18:
+                    return R.drawable.night_18;
+                case 19:
+                    return R.drawable.night_19;
+                case 20:
+                    return R.drawable.night_20;
+                case 21:
+                    return R.drawable.night_21;
+                case 22:
+                    return R.drawable.night_22;
+                case 23:
+                    return R.drawable.night_23;
+                case 24:
+                    return R.drawable.night_24;
+                case 25:
+                    return R.drawable.night_25;
+                case 26:
+                    return R.drawable.night_26;
+                case 27:
+                    return R.drawable.night_17;
+                default:
+                    return R.drawable.night_1; //sun is always shining for default :)
+            }
+        }
+    }
+
+    private static String getWorkoutRecommendation(int cloudValue, double temperature, String time){
+        String workoutRecommendation;
+        if (cloudValue < 8 && temperature > 7 && Integer.parseInt(time) > 5 && Integer.parseInt(time) < 23)
+            workoutRecommendation = "Perfect time for a run!";//extract to string resource!!
+        else if (cloudValue < 8 && temperature < 8 && Integer.parseInt(time) > 5 && Integer.parseInt(time) < 23)
+            workoutRecommendation = "Never to cold for a ride!";
+        else if (cloudValue > 7 && Integer.parseInt(time) > 5 && Integer.parseInt(time) < 23)
+           workoutRecommendation = "Good day for a pool swim!";
+        else if (Integer.parseInt(time) < 6 || Integer.parseInt(time) > 22)
+            workoutRecommendation = "Netflix or sleep! Work hard, rest harder!";
+        else
+            workoutRecommendation = "Bad weather is no excuse for not working out!";
+        return workoutRecommendation;
+    }
+
 }
+
 

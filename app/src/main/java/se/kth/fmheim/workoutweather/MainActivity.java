@@ -1,54 +1,64 @@
 package se.kth.fmheim.workoutweather;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.os.Bundle;
+import android.view.View;
+import android.widget.EditText;
+import android.widget.Toast;
 import android.util.Log;
 
-import com.android.volley.RequestQueue;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.ArrayList;
+import se.kth.fmheim.workoutweather.networking.DownloadController;
 
-import se.kth.fmheim.workoutweather.networking.JSONVolleyDownloader;
-import se.kth.fmheim.workoutweather.view.WeatherItem;
-import se.kth.fmheim.workoutweather.view.WeatherItemsAdapter;
 
 public class MainActivity extends AppCompatActivity {
     private static final String LOG_TAG = MainActivity.class.getSimpleName();
-
+    private EditText editLongitude;
+    private EditText editLatitude;
+    private DownloadController mDownloadController;
+    private final String KEY_RECYCLER_STATE = "recycler_state";
     private RecyclerView mRecyclerView;
-    private RecyclerView.Adapter mAdapter;
-    private RecyclerView.LayoutManager mLayoutManager;
+    private static Bundle mBundleRecyclerViewState;
+
+
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        JSONVolleyDownloader parser = new JSONVolleyDownloader(this, "14.333", "60.383");
-        Log.d(LOG_TAG, "start");
-        parser.fetchData();
-        Log.d(LOG_TAG, "end");
+        //mDownloadController = new DownloadController(this, this, "14.333", "60,383");
+        editLongitude = (EditText) findViewById(R.id.editText_longitude);
+        editLatitude = (EditText) findViewById(R.id.editText_latitude);
+        mRecyclerView = (RecyclerView) findViewById(R.id.recyclerView);
 
-        ArrayList<WeatherItem> weatherItemList = new ArrayList<>();
-        weatherItemList.add(new WeatherItem(R.drawable.day_1, "Date", "15 °C", "Good day for a run"));
-        weatherItemList.add(new WeatherItem(R.drawable.day_2, "Date", "17°C", "Good day for a swim"));
-        weatherItemList.add(new WeatherItem(R.drawable.day_2, "Date", "13°C", "Good day for a ride"));
-
-        mRecyclerView = findViewById(R.id.recyclerView);
-        // mRecyclerView.setHasFixedSize(true);  //only if recycler view doesn't change size
-        mAdapter = new WeatherItemsAdapter(weatherItemList);
-        mLayoutManager = new LinearLayoutManager(this);
-        mRecyclerView.setLayoutManager(mLayoutManager);
-        mRecyclerView.setAdapter(mAdapter);
 
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        //mDownloadController.postRequest();
+        //if (System.currentTimeMillis() - lastDownload > 3_600_000) { // 1 hour
+        // downloadJokes(null);
+        //}
+    }
+
+    public void onChangeLocation(View view) {
+        String longitude = editLongitude.getText().toString();
+        String latitude = editLatitude.getText().toString();
+        if (longitude == null || latitude == null) {
+            Toast toast = Toast.makeText(this, R.string.wrong_input,
+                    Toast.LENGTH_SHORT);
+            toast.show();
+        }
+       DownloadController dc = new DownloadController(this, this, longitude , latitude);
+        dc.postRequest();
+        Log.d(LOG_TAG,dc.getUrl());
+    }
 
 
-    public
 
 
 }

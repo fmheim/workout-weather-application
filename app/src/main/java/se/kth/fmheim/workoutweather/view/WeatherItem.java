@@ -1,6 +1,9 @@
 package se.kth.fmheim.workoutweather.view;
 
 public class WeatherItem {
+    /*
+    Items of RecyclerView
+     */
     private int mWeatherSymbol;
     private String mTextDate;
     private String mTextTemperature;

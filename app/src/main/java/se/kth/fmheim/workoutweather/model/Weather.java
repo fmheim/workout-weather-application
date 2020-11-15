@@ -2,6 +2,8 @@ package se.kth.fmheim.workoutweather.model;
 
 import android.util.Log;
 
+import se.kth.fmheim.workoutweather.R;
+
 public class Weather {
     private static final String LOG_TAG = Weather.class.getSimpleName();
     private String mTime;
@@ -10,15 +12,16 @@ public class Weather {
     private String mClouds;
     private String mApprovedTime;
     private String mReferenceTime;
+    private int mSymbol;
+    private String mWorkoutRecommendation;
 
-    //private String workoutRecommendation;
-    //private String picture;
 
     public Weather() {
         mTime = "no time";
         mDate = "no date";
         mTemperature = 999;
         mClouds = "no data";
+        mSymbol = R.drawable.day_1; // the sun is always shining :)
         Log.d(LOG_TAG, "init");
 
     }
@@ -52,6 +55,14 @@ public class Weather {
         mClouds = clouds;
     }
 
+    public void setSymbol(int symbol) {
+        mSymbol = symbol;
+    }
+
+    public void setWorkoutRecommendation(String mWorkoutRecommendation) {
+        this.mWorkoutRecommendation = mWorkoutRecommendation;
+    }
+
     /*
     get weather data
      */
@@ -72,14 +83,31 @@ public class Weather {
         return mClouds;
     }
 
+    public int getSymbol() {
+        return mSymbol;
+    }
+
+    public String getWorkoutRecommendation() {
+        return mWorkoutRecommendation;
+    }
+
+    public String getApprovedTime() {
+        return mApprovedTime;
+    }
 
     public void logWeather() {
         Log.d(LOG_TAG,
                 "\nTemperature: " + Double.toString(mTemperature)
                         + "\nClouds: " + mClouds
-                        + "\nTime: " + mTime + " o'clock "
+                        + "\nTime: " + mTime
                         + "\nDate: " + mDate);
     }
+
+
+
+
+
+
 
 
 /*
