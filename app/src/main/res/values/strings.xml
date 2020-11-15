@@ -5,4 +5,5 @@
     <string name="approved_time">approved time:</string>
     <string name="button_change_location">Change Location</string>
     <string name="wrong_input">Enter coordinates!</string>
+    <string name="changed">Changed</string>
 </resources>

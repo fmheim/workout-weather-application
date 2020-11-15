@@ -7,9 +7,17 @@ import android.widget.Toast;
 import android.util.Log;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.util.List;
+
+import se.kth.fmheim.workoutweather.data.WeatherEntity;
 import se.kth.fmheim.workoutweather.networking.DownloadController;
+import se.kth.fmheim.workoutweather.view.WeatherItemsAdapter;
+import se.kth.fmheim.workoutweather.view.WeatherViewModel;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -19,7 +27,10 @@ public class MainActivity extends AppCompatActivity {
     private DownloadController mDownloadController;
     private final String KEY_RECYCLER_STATE = "recycler_state";
     private RecyclerView mRecyclerView;
+    private RecyclerView.Adapter mAdapter;
+    private RecyclerView.LayoutManager mLayoutManager;
     private static Bundle mBundleRecyclerViewState;
+    private WeatherViewModel mWeatherViewModel;
 
 
 
@@ -32,6 +43,23 @@ public class MainActivity extends AppCompatActivity {
         editLongitude = (EditText) findViewById(R.id.editText_longitude);
         editLatitude = (EditText) findViewById(R.id.editText_latitude);
         mRecyclerView = (RecyclerView) findViewById(R.id.recyclerView);
+//        mWeatherViewModel = new ViewModelProvider (this).get(WeatherViewModel.class);
+ //       mAdapter = new WeatherItemsAdapter();
+  //      mLayoutManager = new LinearLayoutManager(this);
+  //      mRecyclerView.setLayoutManager(mLayoutManager);
+    //    mRecyclerView.setAdapter(mAdapter);
+
+/*
+//no time for Implementation of view model and database
+        mWeatherViewModel.getAllWeathers().observe(this, new Observer<List<WeatherEntity>>() {
+            @Override
+            public void onChanged(List<WeatherEntity> mWeatherEntities) {
+                Toast toast = Toast.makeText(this, R.string.changed, Toast.LENGTH_SHORT);
+                toast.show();
+            }
+        });
+
+ */
 
 
     }
@@ -40,8 +68,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
         //mDownloadController.postRequest();
-        //if (System.currentTimeMillis() - lastDownload > 3_600_000) { // 1 hour
-        // downloadJokes(null);
+        //if (System.currentTimeMillis() - lastDownload > 3_600_000) {
+        //
         //}
     }
 

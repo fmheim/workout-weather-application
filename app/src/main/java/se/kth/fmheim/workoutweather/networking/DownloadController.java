@@ -58,8 +58,8 @@ public class DownloadController {
                 + longitude + "/lat/" + latitude + "/"; //for development
 
 
-        mUrl = "https://opendata-download-metfcst.smhi.se/api/category/pmp3g/version/2/geotype/point/lon/"
-                + longitude + "/lat/"+ latitude + "/data.json";
+        //mUrl = "https://opendata-download-metfcst.smhi.se/api/category/pmp3g/version/2/geotype/point/lon/"
+               // + longitude + "/lat/"+ latitude + "/data.json";
     }
 
 
@@ -116,6 +116,7 @@ public class DownloadController {
         mLayoutManager = new LinearLayoutManager(mCtx);
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.setAdapter(mAdapter);
+
     }
 
     private void fillTextView(Weather oneWeather){

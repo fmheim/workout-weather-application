@@ -10,11 +10,14 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import se.kth.fmheim.workoutweather.R;
+import se.kth.fmheim.workoutweather.data.WeatherEntity;
 
 public class WeatherItemsAdapter extends RecyclerView.Adapter<WeatherItemsAdapter.WeatherItemsViewHolder> {
     private ArrayList<WeatherItem> mWeatherItemList;
+   private List<WeatherEntity> weathers = new ArrayList<>();
 
     public static class WeatherItemsViewHolder extends RecyclerView.ViewHolder {
 
@@ -22,6 +25,7 @@ public class WeatherItemsAdapter extends RecyclerView.Adapter<WeatherItemsAdapte
         public TextView mTextDate;
         public TextView mTextTemperature;
         public TextView mTextWorkout;
+
 
         public WeatherItemsViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -44,6 +48,12 @@ public class WeatherItemsAdapter extends RecyclerView.Adapter<WeatherItemsAdapte
          */
         mWeatherItemList = weatherItemsList;
     }
+    public WeatherItemsAdapter() {
+        /*
+        When adapter empty constructor
+         */
+
+    }
 
     @NonNull
     @Override
@@ -65,6 +75,10 @@ public class WeatherItemsAdapter extends RecyclerView.Adapter<WeatherItemsAdapte
         holder.mTextDate.setText(currentItem.getTextDate());
         holder.mTextTemperature.setText(currentItem.getTextTemperature());
         holder.mTextWorkout.setText(currentItem.getTextWorkout());
+    }
+    public void setWeathers(List<WeatherEntity> weathers){
+        this.weathers = weathers;
+        notifyDataSetChanged();
     }
 
     @Override
