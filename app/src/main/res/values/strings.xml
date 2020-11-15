@@ -1,3 +1,6 @@
 <resources>
     <string name="app_name">Workout Weather</string>
+    <string name="longitude_hint">enter longitude</string>
+    <string name="latitude_hint">enter latitude</string>
+    <string name="approved_time">approved time:</string>
 </resources>

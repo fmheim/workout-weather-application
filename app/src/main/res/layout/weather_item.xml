@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:cardCornerRadius="21dp"
+    app:cardElevation="3dp">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="5dp"
+        >
+
+        <ImageView
+            android:id="@+id/imageView_weatherSymbol"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:padding="3dp"/>
+
+        <TextView
+            android:id="@+id/textView_Date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_marginTop="0dp"
+            android:layout_marginStart="13dp"
+            android:layout_marginLeft="13dp"
+            android:layout_toEndOf="@id/imageView_weatherSymbol"
+            android:text="Line 1"
+            android:textColor="@android:color/black"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:layout_toRightOf="@id/imageView_weatherSymbol" />
+
+        <TextView
+            android:id="@+id/textView_temperature"
+            android:layout_width="wrap_content"
+            android:layout_height="50sp"
+            android:layout_below="@id/textView_Date"
+            android:layout_marginStart="21dp"
+            android:layout_marginLeft="21dp"
+            android:layout_marginTop="5dp"
+            android:layout_toEndOf="@id/imageView_weatherSymbol"
+            android:layout_toRightOf="@id/imageView_weatherSymbol"
+            android:text="Line 1"
+            android:textColor="@android:color/black"
+            android:textSize="36sp"
+            android:textStyle="bold"
+
+            />
+
+        <TextView
+            android:id="@+id/textView_workOut"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/textView_Date"
+            android:layout_marginStart="21dp"
+            android:layout_marginLeft="21dp"
+            android:layout_marginTop="13dp"
+            android:layout_toEndOf="@id/textView_temperature"
+            android:layout_toRightOf="@id/textView_temperature"
+            android:text="workout advice"
+            android:textSize="14sp"
+            android:textStyle="italic" />
+
+
+    </RelativeLayout>
+
+</androidx.cardview.widget.CardView>
