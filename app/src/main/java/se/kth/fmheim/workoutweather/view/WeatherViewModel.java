@@ -1,48 +1,53 @@
 package se.kth.fmheim.workoutweather.view;
 
-import android.app.Application;
+import android.content.Context;
+import android.util.Log;
 
-import androidx.annotation.NonNull;
-import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.ViewModel;
 
 import java.util.List;
 
-import se.kth.fmheim.workoutweather.data.WeatherEntity;
-import se.kth.fmheim.workoutweather.data.WeatherRepository;
+import se.kth.fmheim.workoutweather.model.Weather;
+import se.kth.fmheim.workoutweather.networking.DownloadController;
 
-public class WeatherViewModel  extends AndroidViewModel {
+public class WeatherViewModel  extends ViewModel {
 
+    private static final String LOG_TAG = WeatherViewModel.class.getSimpleName() ;
     /*
-    View Model that survives entire life cycle
-     */
-    private WeatherRepository repository;
-    private LiveData<List<WeatherEntity>> allWeathers;
+        View Model that survives entire life cycle
+         */
+    private MutableLiveData<List<Weather>> weatherLiveData;
 
-    public WeatherViewModel(@NonNull Application application) {
-        super(application);
-        repository = new WeatherRepository(application);
-        allWeathers = repository.getAllNotes();
+    public WeatherViewModel() {
+        weatherLiveData = new MutableLiveData<>();
     }
 
-    public void insert(WeatherEntity weather){
-        repository.insert(weather);
+    public LiveData<List<Weather>>getWeatherData(){
+        return weatherLiveData;
     }
 
-    public void update(WeatherEntity weather){
-        repository.insert(weather);
+    public void loadWeatherDataAsync(Context ctx, String longitude, String latitude) {
+        // asynchronous call to download and parse data in the background
+        new Thread() {
+            @Override
+            public void run() {
+                try {
+                    Log.d(LOG_TAG, "Pre async download----");
+                    new DownloadController(ctx, longitude,latitude).postRequest(new DownloadController.VolleyCallback(){
+                        @Override
+                        public void onSuccess(List<Weather> weatherData){
+                            weatherLiveData.postValue(weatherData);
+                        }
+                    });
+                } catch (Exception e) {
+                    // do nothing or clear LiveData;
+                    // to signal errors from background tasks we need custom data class
+                    e.printStackTrace();
+                }
+            }
+        }.start();
     }
-
-    public void delete(WeatherEntity weather){
-        repository.insert(weather);
-    }
-
-    public void deleteAllWeathers(){
-        repository.deleteAllWeathers();
-    }
-
-    public LiveData<List<WeatherEntity>> getAllWeathers() {
-        return allWeathers;
-    }
-
 }
+

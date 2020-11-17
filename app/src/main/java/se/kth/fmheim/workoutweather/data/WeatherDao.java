@@ -25,7 +25,7 @@ public interface WeatherDao {
     void deleteAllWeathers();
 
     @Query("SELECT * FROM weather_table")
-    LiveData<List<WeatherEntity>> getAllNotes();
+    LiveData<List<WeatherEntity>> getAllWeathers();
 
 
 

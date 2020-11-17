@@ -17,7 +17,7 @@ public class WeatherRepository {
     public WeatherRepository(Application application){
        WeatherDatabase database = WeatherDatabase.getInstance(application);
        mWeatherDao = database.weatherDao();
-       allWeathers = mWeatherDao.getAllNotes();
+       allWeathers = mWeatherDao.getAllWeathers();
     }
 
     public void insert (WeatherEntity weather){
@@ -36,7 +36,7 @@ public class WeatherRepository {
         new DeleteAllWeathersAsyncTask(mWeatherDao).execute();
     }
 
-    public LiveData<List<WeatherEntity>> getAllNotes(){
+    public LiveData<List<WeatherEntity>> getAllWeathers(){
         return allWeathers;
     }
 

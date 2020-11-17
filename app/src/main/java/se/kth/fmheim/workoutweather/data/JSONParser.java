@@ -6,6 +6,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import se.kth.fmheim.workoutweather.R;
 import se.kth.fmheim.workoutweather.model.Weather;
 
@@ -23,7 +27,7 @@ public class JSONParser {
             TIME_Series = "timeSeries";
 
 
-    public static Weather[] parseToWeather(JSONObject root) throws JSONException {
+    public List<Weather> parseToWeather(JSONObject root) throws JSONException {
         /*
             Parsing JASON-data into weather objects and returning array of all Weather data for next 10 days
         */
@@ -68,14 +72,14 @@ public class JSONParser {
                 }
             }
         }
-        return weatherForTenDaysArr;
+        return new ArrayList<Weather>(Arrays.asList(weatherForTenDaysArr));
     }
 
-    private static String getDate(String validTime) {
+    private String getDate(String validTime) {
         return validTime.substring(0, 10);
     }
 
-    private static String getTime(String validTime) {
+    private String getTime(String validTime) {
         String time = validTime.substring(11, 13);
         if ("0".equals(time.substring(0, 1))) {
             time = time.substring(1);
@@ -83,7 +87,7 @@ public class JSONParser {
         return time;
     }
 
-    private static String getCloud(int cloudValue) {
+    private String getCloud(int cloudValue) {
         /*
         decoding cloud coverage values
          */
@@ -147,7 +151,7 @@ public class JSONParser {
         }
     }
 
-    private static int getSymbol(int cloudValue, String time) {
+    private int getSymbol(int cloudValue, String time) {
 
         boolean isDay = Integer.parseInt(time) > 5 && Integer.parseInt(time) < 18;
         if (isDay) {
@@ -272,7 +276,7 @@ public class JSONParser {
         }
     }
 
-    private static String getWorkoutRecommendation(int cloudValue, double temperature, String time){
+    private String getWorkoutRecommendation(int cloudValue, double temperature, String time){
         String workoutRecommendation;
         if (cloudValue < 8 && temperature > 7 && Integer.parseInt(time) > 5 && Integer.parseInt(time) < 23)
             workoutRecommendation = "Perfect time for a run!";//extract to string resource!!

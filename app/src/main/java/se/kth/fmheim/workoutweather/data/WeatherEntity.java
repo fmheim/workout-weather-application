@@ -5,6 +5,9 @@ import androidx.room.PrimaryKey;
 
 @Entity(tableName = "weather_table")
 public class WeatherEntity {
+    /*
+    One entity that is saved in room database
+     */
 
     @PrimaryKey(autoGenerate = true)
     private int id;
