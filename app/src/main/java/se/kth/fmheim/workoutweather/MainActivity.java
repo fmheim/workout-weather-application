@@ -31,24 +31,22 @@ public class MainActivity extends AppCompatActivity {
     //logging
     private static final String LOG_TAG = MainActivity.class.getSimpleName();
     //views
-    private EditText editLongitude;
-    private EditText editLatitude;
+    private EditText editCityName;
     private TextView texViewApprovedTime;
-    private TextView textViewCoordinates;
+    private TextView textViewCityName;
     private TextView textViewNoNet;
     private RecyclerView recyclerView;
     //data
     private WeatherRepository weatherRepository;
-    private WeatherViewModel weatherViewModel;
-    private String longitude;
-    private String latitude;
+    private String mCityName;
+
     //network
     private long lastDownload;
     private boolean isConnected;
     private static final int DOWNLOAD_CHECK_INTERVAL = 600000; // every 10min
     private static final int NET_CHECK_INTERVAL = 2000; //every 2 seconds
-    private Handler timerHandler = new Handler();
-    private Runnable timerRunnable = new Runnable() {
+    private final Handler timerHandler = new Handler();
+    private final Runnable timerRunnable = new Runnable() {
         @Override
         public void run() {
             ConnectivityManager connectivityManager = (ConnectivityManager) getApplication()
@@ -65,16 +63,16 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //views
         setContentView(R.layout.activity_main);
-        editLongitude = (EditText) findViewById(R.id.editText_longitude);
-        editLatitude = (EditText) findViewById(R.id.editText_latitude);
+        editCityName = (EditText) findViewById(R.id.editText_cityName);
         recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
         texViewApprovedTime = (TextView) findViewById(R.id.textView_approvedTime);
-        textViewCoordinates = (TextView) findViewById(R.id.textView_coordinates);
+        textViewCityName = (TextView) findViewById(R.id.textView_cityName);
         textViewNoNet = (TextView) findViewById(R.id.textView_noNet);
         //data
         weatherRepository = new WeatherRepository(this.getApplication());
@@ -83,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
         re-created activities instances receive the same ViewModel instance created
         by the first activity.
         */
-        weatherViewModel = new ViewModelProvider
+        WeatherViewModel weatherViewModel = new ViewModelProvider
                 (this, WeatherViewModelFactory.getInstance(this.getApplication()))
                 .get(WeatherViewModel.class);
         weatherViewModel.getWeatherLiveData().observe(this, new Observer<List<Weather>>() {
@@ -93,7 +91,7 @@ public class MainActivity extends AppCompatActivity {
                 if (weatherData.size() != 0) {
                     fillRecycleView(weatherData);
                     printApprovedTime(weatherData.get(0));
-                    printCoordinates(weatherData.get(0));
+                    printCityName(weatherData.get(0));
                     Log.d(LOG_TAG, "Size of List: " + weatherData.size());
                 }
             }
@@ -106,15 +104,14 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        String coordinates = textViewCoordinates.getText().toString();
-        if (!coordinates.trim().isEmpty()) {
-            longitude = coordinates.substring(0, 8);
-            latitude = coordinates.substring(10);
+        String cityNameField = textViewCityName.getText().toString();
+        if (!cityNameField.trim().isEmpty()) {
+            mCityName = cityNameField;
             if (isConnected &&
                     (System.currentTimeMillis() - lastDownload) > DOWNLOAD_CHECK_INTERVAL) {
-                weatherRepository.loadWeatherDataAsync(this, longitude, latitude);
+                weatherRepository.loadWeatherDataAsync(this, mCityName);
                 lastDownload = 0;
-                Log.d(LOG_TAG, "On Start, " + longitude + ", " + latitude);
+                Log.d(LOG_TAG, "On Start, " + mCityName);
             }
         }
     }
@@ -127,15 +124,14 @@ public class MainActivity extends AppCompatActivity {
 
     public void onChangeLocation(View view) {
         if (isConnected) {
-            longitude = editLongitude.getText().toString();
-            latitude = editLatitude.getText().toString();
-            if (longitude.trim().isEmpty() || latitude.trim().isEmpty()) {
+            mCityName = editCityName.getText().toString();
+            if (mCityName.trim().isEmpty()) {
                 Toast toast = Toast.makeText(this, R.string.wrong_input,
                         Toast.LENGTH_SHORT);
                 toast.show();
             } else {
                 Log.d(LOG_TAG, "Pre loadWeatherDataAsync....");
-                weatherRepository.loadWeatherDataAsync(this, longitude, latitude);
+                weatherRepository.loadWeatherDataAsync(this, mCityName);
                 lastDownload = System.currentTimeMillis();
             }
         } else {
@@ -181,8 +177,8 @@ public class MainActivity extends AppCompatActivity {
         Log.d(LOG_TAG, "...printed approved date recycler view");
     }
 
-    private void printCoordinates(Weather oneWeather) {
-        String coordinates = oneWeather.getCoordinates();
-        textViewCoordinates.setText(coordinates);
+    private void printCityName(Weather oneWeather) {
+        String cityName = oneWeather.getCityName();
+        textViewCityName.setText(cityName);
     }
 }

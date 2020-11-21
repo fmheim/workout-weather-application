@@ -24,7 +24,30 @@ public class JSONParser {
             APPROVED_TIME = "approvedTime",
             TIME_Series = "timeSeries",
             GEOMETRY = "geometry",
-            COORDINATES = "coordinates";
+            COORDINATES = "coordinates",
+            LONGITUDE = "lon",
+            LATITUDE = "lat",
+            PLACE = "place";
+    private String mCityName;
+
+
+    public String[] parseToCoordinates(JSONArray root) throws JSONException {
+        String[] coordinates = new String[2];
+        JSONObject cityInfo = root.getJSONObject(0);
+        mCityName = cityInfo.getString(PLACE);
+        Double longitude = cityInfo.getDouble(LONGITUDE);
+        Double latitude = cityInfo.getDouble(LATITUDE);
+        coordinates[0] = String.valueOf(longitude);
+        coordinates[1] = String.valueOf(latitude);
+
+        if (coordinates[0].length() > 6)
+            coordinates[0] = coordinates[0].substring(0, 6);
+        if (coordinates[1].length() > 6)
+            coordinates[1] = coordinates[1].substring(0, 6);
+
+        Log.d(LOG_TAG, coordinates[0] + " trimmed??");
+        return coordinates;
+    }
 
     public List<Weather> parseToWeather(JSONObject root) throws JSONException {
         /*
@@ -55,6 +78,7 @@ public class JSONParser {
             weatherAtTime.setApprovedTime(approvedTime);
             weatherAtTime.setReferenceTime(referenceTime);
             weatherAtTime.setCoordinates(coordinates);
+            weatherAtTime.setCityName(mCityName);
             for (int j = 0; j < parameters.length(); j++) {
             /*
             looping through parameters and parsing the important ones to weather object
@@ -91,7 +115,7 @@ public class JSONParser {
         return time;
     }
 
-    private String getCoordinates(Double longitude, Double latitude){
+    private String getCoordinates(Double longitude, Double latitude) {
         return longitude + ", " + latitude;
     }
 

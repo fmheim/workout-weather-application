@@ -34,6 +34,8 @@ public class Weather {
     private String mWorkoutRecommendation;
     @ColumnInfo(name = "Coordinates")
     private String mCoordinates;
+    @ColumnInfo(name = "City")
+    private String mCityName;
 
 
     public Weather() {
@@ -42,7 +44,7 @@ public class Weather {
         mTemperature = 27;
         mClouds = "no data";
         mSymbol = R.drawable.day_1; // the sun is always shining :)
-        mApprovedTime = "Type in Coordinates to get real weather data!";
+        mApprovedTime = "Enter Location to get real weather data!";
         mWorkoutRecommendation = "Here you'll find a recommendation for your next work out";
         mReferenceTime = "No reference time yet";
         Log.d(LOG_TAG, "init");
@@ -90,6 +92,9 @@ public class Weather {
         mCoordinates = coordinates;
     }
 
+    public void setCityName(String cityName) {
+        mCityName = cityName;
+    }
     public void setId(int id) {
         this.id = id;
     }
@@ -133,6 +138,9 @@ public class Weather {
         return mCoordinates;
     }
 
+    public String getCityName() {
+        return mCityName;
+    }
     public String getLongitude(){
         return mCoordinates.substring(0, 9);
     }
@@ -153,4 +161,8 @@ public class Weather {
                         + "\nTime: " + mTime
                         + "\nDate: " + mDate);
     }
+
+
+
+
 }

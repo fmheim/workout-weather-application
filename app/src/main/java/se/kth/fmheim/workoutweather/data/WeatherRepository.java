@@ -54,7 +54,7 @@ public class WeatherRepository {
         WeatherDatabase.databaseWriteExecutor.execute(mWeatherDao::deleteAllWeatherData);
     }
 
-    public void loadWeatherDataAsync(Context ctx, String longitude, String latitude) {
+    public void loadWeatherDataAsync(Context ctx, String cityName) {
         // asynchronous call to download and parse data in the background
         // and update database
         new Thread() {
@@ -62,7 +62,7 @@ public class WeatherRepository {
             public void run() {
                 try {
                     Log.d(LOG_TAG, "Pre async download....");
-                    mDownloader.setUrl(longitude, latitude);
+                    mDownloader.setCityUrl(cityName);
                     mDownloader.postRequest(new Downloader.VolleyCallback() {
                         @Override
                         public void onSuccess(List<Weather> weatherData) {

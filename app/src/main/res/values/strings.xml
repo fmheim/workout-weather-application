@@ -1,14 +1,14 @@
 <resources>
     <string name="app_name">Workout Weather</string>
     <string name="longitude_hint">enter longitude</string>
-    <string name="latitude_hint">enter latitude</string>
+    <string name="cityName_hint">enter city in Sweden</string>
     <string name="approved_time">approved time:</string>
-    <string name="button_change_location">Change Location</string>
+    <string name="button_change_location">Change City</string>
     <string name="wrong_input">No coordinates entered!</string>
     <string name="changed">Changed</string>
     <string name="approvedTime">Approved time: %s, %s</string>
     <string name="no_network_connection">No network connection</string>
     <string name="location_symbol">Location Symbol</string>
     <string name="data_updated">Data updated</string>
-    <string name="out_off_bounds">Sorry, coordinates out of bounds! :(</string>
+    <string name="out_off_bounds">Sorry, location out of bounds! :(</string>
 </resources>
