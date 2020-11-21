@@ -15,7 +15,6 @@ public class Weather {
 
 
     @PrimaryKey(autoGenerate = true)
-    @NonNull
     private int id;
     @ColumnInfo(name = "Time")
     private String mTime;
@@ -134,6 +133,14 @@ public class Weather {
         return mCoordinates;
     }
 
+    public String getLongitude(){
+        return mCoordinates.substring(0, 9);
+    }
+    public String getLatitude(){
+        return mCoordinates.substring(11);
+    }
+
+
 
     public String getReferenceTime() {
         return mReferenceTime;
@@ -141,7 +148,7 @@ public class Weather {
 
     public void logWeather() {
         Log.d(LOG_TAG,
-                "\nTemperature: " + Double.toString(mTemperature)
+                "\nTemperature: " + mTemperature
                         + "\nClouds: " + mClouds
                         + "\nTime: " + mTime
                         + "\nDate: " + mDate);

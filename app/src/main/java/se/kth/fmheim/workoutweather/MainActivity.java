@@ -4,6 +4,7 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
@@ -42,11 +43,27 @@ public class MainActivity extends AppCompatActivity {
     private String longitude;
     private String latitude;
     //network
-    private boolean isConnected;
-    private ConnectivityManager connectivityManager;
-    private NetworkInfo activeNetwork;
     private long lastDownload;
-
+    private boolean isConnected;
+    private static final int DOWNLOAD_CHECK_INTERVAL = 600000; // every 10min
+    private static final int NET_CHECK_INTERVAL = 2000; //every 2 seconds
+    private Handler timerHandler = new Handler();
+    private Runnable timerRunnable = new Runnable() {
+        @Override
+        public void run() {
+            ConnectivityManager connectivityManager = (ConnectivityManager) getApplication()
+                    .getApplicationContext()
+                    .getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo activeNetwork = connectivityManager.getActiveNetworkInfo();
+            isConnected = activeNetwork != null && activeNetwork.isConnectedOrConnecting();
+            boolean isVisible = textViewNoNet.getVisibility() == View.VISIBLE;
+            if (isConnected && isVisible) {
+                textViewNoNet.setVisibility(View.INVISIBLE);
+            } else if (!isConnected && !isVisible)
+                textViewNoNet.setVisibility(View.VISIBLE);
+            timerHandler.postDelayed(this, NET_CHECK_INTERVAL);
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,9 +78,6 @@ public class MainActivity extends AppCompatActivity {
         textViewNoNet = (TextView) findViewById(R.id.textView_noNet);
         //data
         weatherRepository = new WeatherRepository(this.getApplication());
-        longitude = "0";
-        latitude = "0";
-        lastDownload = 0;
         /*
         create a ViewModel the first time the system calls this activity's onCreate();
         re-created activities instances receive the same ViewModel instance created
@@ -80,34 +94,39 @@ public class MainActivity extends AppCompatActivity {
                     fillRecycleView(weatherData);
                     printApprovedTime(weatherData.get(0));
                     printCoordinates(weatherData.get(0));
-                    Log.d(LOG_TAG, "Size of List: " + String.valueOf(weatherData.size()));
+                    Log.d(LOG_TAG, "Size of List: " + weatherData.size());
                 }
             }
         });
         //network
-        connectivityManager =
-                (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
-        activeNetwork = connectivityManager.getActiveNetworkInfo();
-        isConnected = activeNetwork != null && activeNetwork.isConnectedOrConnecting();
+        lastDownload = 0;
+        timerHandler.postDelayed(timerRunnable, 0);
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        isConnected = activeNetwork != null && activeNetwork.isConnectedOrConnecting();
-        if (isConnected && (System.currentTimeMillis() - lastDownload) > 6) {
-            lastDownload = 0;
-            weatherRepository.loadWeatherDataAsync(this, longitude, latitude);
-            Log.d(LOG_TAG, "On Start, " + longitude + ", " + latitude);
+        String coordinates = textViewCoordinates.getText().toString();
+        if (!coordinates.trim().isEmpty()) {
+            longitude = coordinates.substring(0, 8);
+            latitude = coordinates.substring(10);
+            if (isConnected &&
+                    (System.currentTimeMillis() - lastDownload) > DOWNLOAD_CHECK_INTERVAL) {
+                weatherRepository.loadWeatherDataAsync(this, longitude, latitude);
+                lastDownload = 0;
+                Log.d(LOG_TAG, "On Start, " + longitude + ", " + latitude);
+            }
         }
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        timerHandler.removeCallbacks(timerRunnable);
+    }
+
     public void onChangeLocation(View view) {
-        activeNetwork = connectivityManager.getActiveNetworkInfo();
-        isConnected = activeNetwork != null && activeNetwork.isConnectedOrConnecting();
         if (isConnected) {
-            if (textViewNoNet.getVisibility() == View.VISIBLE)
-                textViewNoNet.setVisibility(View.INVISIBLE);
             longitude = editLongitude.getText().toString();
             latitude = editLatitude.getText().toString();
             if (longitude.trim().isEmpty() || latitude.trim().isEmpty()) {
@@ -143,7 +162,7 @@ public class MainActivity extends AppCompatActivity {
             String workoutRecommendation = weatherAtTime.getWorkoutRecommendation();
             weatherItemList.add(new WeatherItem(weatherSymbol, date, temperature, workoutRecommendation));
         }
-        RecyclerView.Adapter adapter = new WeatherItemsAdapter(weatherItemList);
+        RecyclerView.Adapter<WeatherItemsAdapter.WeatherItemsViewHolder> adapter = new WeatherItemsAdapter(weatherItemList);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(adapter);

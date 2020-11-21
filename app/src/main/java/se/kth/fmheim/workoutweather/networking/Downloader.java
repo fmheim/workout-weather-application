@@ -11,6 +11,7 @@ package se.kth.fmheim.workoutweather.networking;
 
 import android.content.Context;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -23,6 +24,7 @@ import org.json.JSONObject;
 
 import java.util.List;
 
+import se.kth.fmheim.workoutweather.R;
 import se.kth.fmheim.workoutweather.data.JSONParser;
 import se.kth.fmheim.workoutweather.data.Weather;
 
@@ -35,6 +37,7 @@ public class Downloader {
 
     private final RequestQueue mQueue;
     private String mUrl;
+    private Context mCtx;
 
 
     public Downloader(Context ctx) {
@@ -44,6 +47,7 @@ public class Downloader {
         - sets request queue
         */
         mQueue = VolleySingleton.getInstance(ctx).getRequestQueue();
+        mCtx = ctx;
     }
 
     public RequestQueue getQueue() {
@@ -83,6 +87,9 @@ public class Downloader {
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError mVolleyError) {
+                        Toast toast = Toast.makeText(mCtx, R.string.out_off_bounds,
+                                Toast.LENGTH_SHORT);
+                        toast.show();
                         mVolleyError.printStackTrace();
                     }
                 });

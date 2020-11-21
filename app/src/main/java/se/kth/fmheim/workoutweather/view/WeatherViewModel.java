@@ -26,7 +26,7 @@ public class WeatherViewModel extends AndroidViewModel {
         super(application);
         Log.d(LOG_TAG, "ViewModel Constructor");
         mRepository = new WeatherRepository(application);
-        mWeatherLiveData = mRepository.getWeatherData();
+        mWeatherLiveData = mRepository.getLiveWeatherData();
 
 
     }
@@ -35,48 +35,5 @@ public class WeatherViewModel extends AndroidViewModel {
         return mWeatherLiveData;
     }
 
-
-    public void insert(List<Weather> weatherData) {
-        mRepository.insert(weatherData);
-    }
-
-    public void update(List<Weather> weatherData) {
-        mRepository.update(weatherData);
-    }
-
-    public void delete(Weather weather) {
-        mRepository.delete(weather);
-    }
-
-    public void deleteWeatherData() {
-        mRepository.deleteAllWeatherData();
-    }
-
-
-
-/*
-    public void loadWeatherDataAsync(String longitude, String latitude) {
-
-        //asynchronous call to download and parse data in the background
-        //receives weatherData and posts it to Live Data
-
-        new Thread() {
-            @Override
-            public void run() {
-                try {
-                    Log.d(LOG_TAG, "Pre async download----");
-                    new DownloadController(mApplication.getApplicationContext(), longitude,latitude).postRequest(new DownloadController.VolleyCallback(){
-                        @Override
-                        public void onSuccess(List<Weather> weatherData){
-                            weatherLiveData.postValue(weatherData);
-                        }
-                    });
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        }.start();
-    }
-*/
 }
 

@@ -35,10 +35,11 @@ public class WeatherRepository {
 
     // Room executes all queries on a separate thread.
     // Observed LiveData will notify the observer when the data has changed.
-    public LiveData<List<Weather>> getWeatherData() {
+    public LiveData<List<Weather>> getLiveWeatherData() {
         Log.d(LOG_TAG, "Getting LiveData from Repository");
         return mWeatherDao.getLiveWeatherData();
     }
+
 
     public void insert(List<Weather> weatherData) {
         WeatherDatabase.databaseWriteExecutor.execute(() -> {
@@ -46,31 +47,16 @@ public class WeatherRepository {
         });
     }
 
-    public void update(List<Weather> weatherData) {
-        WeatherDatabase.databaseWriteExecutor.execute(() -> {
-            mWeatherDao.update(weatherData);
-        });
-    }
-
-    public RequestQueue getQueue() {
-        return mDownloader.getQueue();
-    }
 
 
-    public void delete(Weather weather) {
-        WeatherDatabase.databaseWriteExecutor.execute(() -> {
-            mWeatherDao.delete(weather);
-        });
-    }
 
     public void deleteAllWeatherData() {
-        WeatherDatabase.databaseWriteExecutor.execute(() -> {
-            mWeatherDao.deleteAllWeatherData();
-        });
+        WeatherDatabase.databaseWriteExecutor.execute(mWeatherDao::deleteAllWeatherData);
     }
 
     public void loadWeatherDataAsync(Context ctx, String longitude, String latitude) {
         // asynchronous call to download and parse data in the background
+        // and update database
         new Thread() {
             @Override
             public void run() {
@@ -88,8 +74,6 @@ public class WeatherRepository {
                         }
                     });
                 } catch (Exception e) {
-                    // do nothing or clear LiveData;
-                    // to signal errors from background tasks we need custom data class
                     e.printStackTrace();
                 }
             }
