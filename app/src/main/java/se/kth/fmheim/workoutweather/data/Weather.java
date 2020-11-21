@@ -1,27 +1,51 @@
-package se.kth.fmheim.workoutweather.model;
+package se.kth.fmheim.workoutweather.data;
 
 import android.util.Log;
 
+import androidx.annotation.NonNull;
+import androidx.room.ColumnInfo;
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
+
 import se.kth.fmheim.workoutweather.R;
 
+@Entity(tableName = "weather_table")
 public class Weather {
     private static final String LOG_TAG = Weather.class.getSimpleName();
+
+
+    @PrimaryKey(autoGenerate = true)
+    @NonNull
+    private int id;
+    @ColumnInfo(name = "Time")
     private String mTime;
+    @ColumnInfo(name = "Date")
     private String mDate;
+    @ColumnInfo(name = "Temperature")
     private double mTemperature;
+    @ColumnInfo(name = "Cloud coverage")
     private String mClouds;
+    @ColumnInfo(name = "Approved Time")
     private String mApprovedTime;
+    @ColumnInfo(name = "Reference Time")
     private String mReferenceTime;
+    @ColumnInfo(name = "Weather Symbol")
     private int mSymbol;
+    @ColumnInfo(name = "Workout Recommendation")
     private String mWorkoutRecommendation;
+    @ColumnInfo(name = "Coordinates")
+    private String mCoordinates;
 
 
     public Weather() {
-        mTime = "no time";
-        mDate = "no date";
-        mTemperature = 999;
+        mTime = "A sunny time";
+        mDate = "A sunny year";
+        mTemperature = 27;
         mClouds = "no data";
         mSymbol = R.drawable.day_1; // the sun is always shining :)
+        mApprovedTime = "Type in Coordinates to get real weather data!";
+        mWorkoutRecommendation = "Here you'll find a recommendation for your next work out";
+        mReferenceTime = "No reference time yet";
         Log.d(LOG_TAG, "init");
 
     }
@@ -42,12 +66,12 @@ public class Weather {
     }
 
     public void setDate(String date) {
-        Log.d(LOG_TAG, "~~~~~~~~~~~~~~~~~Set Date~~~~~~~~~~~~~~~~~~~~~~~ " + date);
+        Log.d(LOG_TAG, "New date set: " + date);
         mDate = date;
     }
 
     public void setTemperature(double temperature) {
-        //Log.d(LOG_TAG, "~~~~~~~~~~~~~~~~~Set Temperature~~~~~~~~~~~~~~~~~~~~~~~ " + temperature);
+        Log.d(LOG_TAG, "New temperature set: " + temperature);
         mTemperature = temperature;
     }
 
@@ -63,13 +87,20 @@ public class Weather {
         this.mWorkoutRecommendation = mWorkoutRecommendation;
     }
 
+    public void setCoordinates(String coordinates) {
+        mCoordinates = coordinates;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
     /*
     get weather data
      */
     public String getTime() {
         return mTime;
     }
-
 
     public String getDate() {
         return mDate;
@@ -95,6 +126,19 @@ public class Weather {
         return mApprovedTime;
     }
 
+    public int getId() {
+        return id;
+    }
+
+    public String getCoordinates() {
+        return mCoordinates;
+    }
+
+
+    public String getReferenceTime() {
+        return mReferenceTime;
+    }
+
     public void logWeather() {
         Log.d(LOG_TAG,
                 "\nTemperature: " + Double.toString(mTemperature)
@@ -102,17 +146,4 @@ public class Weather {
                         + "\nTime: " + mTime
                         + "\nDate: " + mDate);
     }
-
-
-
-
-
-
-
-
-/*
-get day
-...
- */
-
 }

@@ -7,11 +7,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import se.kth.fmheim.workoutweather.R;
-import se.kth.fmheim.workoutweather.model.Weather;
 
 public class JSONParser {
     private static final String
@@ -24,8 +22,9 @@ public class JSONParser {
             CLOUD_COVERAGE = "Wsymb2",
             REFERENCE_TIME = "referenceTime",
             APPROVED_TIME = "approvedTime",
-            TIME_Series = "timeSeries";
-
+            TIME_Series = "timeSeries",
+            GEOMETRY = "geometry",
+            COORDINATES = "coordinates";
 
     public List<Weather> parseToWeather(JSONObject root) throws JSONException {
         /*
@@ -34,24 +33,28 @@ public class JSONParser {
         String approvedTime = root.getString(APPROVED_TIME);
         String referenceTime = root.getString(REFERENCE_TIME);
         JSONArray timeSeries = root.getJSONArray(TIME_Series);
-        Weather[] weatherForTenDaysArr = new Weather[timeSeries.length()]; //for each time entry new weather object
-        Log.d(LOG_TAG, "parser init ");
+        JSONObject geometry = root.getJSONObject(GEOMETRY);
+        JSONArray coordinatesArr = geometry.getJSONArray(COORDINATES);
+
+
+        List<Weather> weatherData = new ArrayList<>(); //for each time entry new weather object
+        Log.d(LOG_TAG, "parser initialized ");
         for (int i = 0; i < timeSeries.length(); i++) {
             /*
             looping through packages of weather data for provided times
             */
-            weatherForTenDaysArr[i] = new Weather();
             JSONObject parametersAtTime = timeSeries.getJSONObject(i);
             String validTime = parametersAtTime.getString(VALID_TIME);
-
-            weatherForTenDaysArr[i].setDate(getDate(validTime));
-            weatherForTenDaysArr[i].setTime(getTime(validTime));
-            weatherForTenDaysArr[i].setApprovedTime(approvedTime);
-            weatherForTenDaysArr[i].setReferenceTime(referenceTime);
-
-
+            String coordinates = getCoordinates(coordinatesArr.getJSONArray(0).getDouble(0),
+                    coordinatesArr.getJSONArray(0).getDouble(1));
             JSONArray parameters = parametersAtTime.getJSONArray(PARAMETERS); //one set of parameters for a valid time
-
+            Weather weatherAtTime = new Weather();
+            weatherData.add(weatherAtTime);
+            weatherAtTime.setDate(getDate(validTime));
+            weatherAtTime.setTime(getTime(validTime));
+            weatherAtTime.setApprovedTime(approvedTime);
+            weatherAtTime.setReferenceTime(referenceTime);
+            weatherAtTime.setCoordinates(coordinates);
             for (int j = 0; j < parameters.length(); j++) {
             /*
             looping through parameters and parsing the important ones to weather object
@@ -61,18 +64,19 @@ public class JSONParser {
 
                 //Log.d(LOG_TAG, Integer.toString(i) + Integer.toString(j));
                 if (TEMPERATURE.equals(parameter.getString(NAME))) {
-                    weatherForTenDaysArr[i].setTemperature(values.getDouble(0));//
+                    weatherAtTime.setTemperature(values.getDouble(0));//
                     Log.d(LOG_TAG, "Temp. assigned: " + Double.toString(values.getDouble(0)));
                 }
                 if (CLOUD_COVERAGE.equals(parameter.getString(NAME))) {
-                    weatherForTenDaysArr[i].setClouds(getCloud(values.getInt(0)));
+                    weatherAtTime.setClouds(getCloud(values.getInt(0)));
                     Log.d(LOG_TAG, "Cloud status assigned: " + Double.toString(values.getInt(0)));
-                    weatherForTenDaysArr[i].setSymbol(getSymbol(values.getInt(0), weatherForTenDaysArr[i].getTime()));
-                    weatherForTenDaysArr[i].setWorkoutRecommendation(getWorkoutRecommendation(values.getInt(0), weatherForTenDaysArr[i].getTemperature(),weatherForTenDaysArr[i].getTime()));
+                    weatherAtTime.setSymbol(getSymbol(values.getInt(0), weatherAtTime.getTime()));
+                    weatherAtTime.setWorkoutRecommendation(getWorkoutRecommendation(values.getInt(0), weatherAtTime.getTemperature(), weatherAtTime.getTime()));
                 }
             }
+
         }
-        return new ArrayList<Weather>(Arrays.asList(weatherForTenDaysArr));
+        return weatherData;
     }
 
     private String getDate(String validTime) {
@@ -85,6 +89,10 @@ public class JSONParser {
             time = time.substring(1);
         }
         return time;
+    }
+
+    private String getCoordinates(Double longitude, Double latitude){
+        return longitude + ", " + latitude;
     }
 
     private String getCloud(int cloudValue) {
@@ -276,21 +284,20 @@ public class JSONParser {
         }
     }
 
-    private String getWorkoutRecommendation(int cloudValue, double temperature, String time){
+    private String getWorkoutRecommendation(int cloudValue, double temperature, String time) {
         String workoutRecommendation;
-        if (cloudValue < 8 && temperature > 7 && Integer.parseInt(time) > 5 && Integer.parseInt(time) < 23)
+        if (cloudValue < 8 && temperature > 7 && Integer.parseInt(time) > 5 && Integer.parseInt(time) < 21)
             workoutRecommendation = "Perfect time for a run!";//extract to string resource!!
-        else if (cloudValue < 8 && temperature < 8 && Integer.parseInt(time) > 5 && Integer.parseInt(time) < 23)
+        else if (cloudValue < 8 && temperature < 8 && Integer.parseInt(time) > 5 && Integer.parseInt(time) < 21)
             workoutRecommendation = "Never to cold for a ride!";
-        else if (cloudValue > 7 && Integer.parseInt(time) > 5 && Integer.parseInt(time) < 23)
-           workoutRecommendation = "Good day for a pool swim!";
-        else if (Integer.parseInt(time) < 6 || Integer.parseInt(time) > 22)
-            workoutRecommendation = "Netflix or sleep! Work hard, rest harder!";
+        else if (cloudValue > 7 && Integer.parseInt(time) > 5 && Integer.parseInt(time) < 21)
+            workoutRecommendation = "Good day for a pool swim!";
+        else if (Integer.parseInt(time) < 6 || Integer.parseInt(time) > 20)
+            workoutRecommendation = "Work hard, rest harder!";
         else
-            workoutRecommendation = "Bad weather is no excuse for not working out!";
+            workoutRecommendation = "Always a good idea to work out";
         return workoutRecommendation;
     }
-
 }
 
 

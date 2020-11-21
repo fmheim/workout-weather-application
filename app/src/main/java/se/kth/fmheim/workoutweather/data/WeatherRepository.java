@@ -1,99 +1,98 @@
 package se.kth.fmheim.workoutweather.data;
 
 import android.app.Application;
-import android.os.AsyncTask;
+import android.content.Context;
+import android.util.Log;
+import android.widget.Toast;
 
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
+
+import com.android.volley.RequestQueue;
+import com.android.volley.toolbox.ImageRequest;
 
 import java.util.List;
 
-import se.kth.fmheim.workoutweather.model.Weather;
+import se.kth.fmheim.workoutweather.R;
+import se.kth.fmheim.workoutweather.networking.Downloader;
 
 public class WeatherRepository {
-    //ViewModel has to call only these methods to interact with Database
-    private WeatherDao mWeatherDao;
-    private LiveData<List<WeatherEntity>> allWeathers;
+    private static final String LOG_TAG = WeatherRepository.class.getSimpleName();
+    /*
+        A Repository class provides a clean API for data access to the rest of the application.
+        ViewModel has to call only these methods to interact with Database
+        executed NOT on main thread
+         */
+    private final WeatherDao mWeatherDao;
+    private final MutableLiveData<List<Weather>> mWeatherLiveDataFromWeb = new MutableLiveData<>();
+    private final Downloader mDownloader;
 
-    public WeatherRepository(Application application){
-       WeatherDatabase database = WeatherDatabase.getInstance(application);
-       mWeatherDao = database.weatherDao();
-       allWeathers = mWeatherDao.getAllWeathers();
+    public WeatherRepository(Application application) {
+        WeatherDatabase database = WeatherDatabase.getDatabase(application);
+        mWeatherDao = database.weatherDao();
+        mDownloader = new Downloader(application.getApplicationContext());
     }
 
-    public void insert (WeatherEntity weather){
-        new InsertWeatherAsyncTask(mWeatherDao).execute(weather);
+    // Room executes all queries on a separate thread.
+    // Observed LiveData will notify the observer when the data has changed.
+    public LiveData<List<Weather>> getWeatherData() {
+        Log.d(LOG_TAG, "Getting LiveData from Repository");
+        return mWeatherDao.getLiveWeatherData();
     }
 
-    public void update (WeatherEntity weather){
-        new UpdateWeatherAsyncTask(mWeatherDao).execute(weather);
+    public void insert(List<Weather> weatherData) {
+        WeatherDatabase.databaseWriteExecutor.execute(() -> {
+            mWeatherDao.insert(weatherData);
+        });
     }
 
-    public void delete (WeatherEntity weather){
-        new DeleteWeatherAsyncTask(mWeatherDao).execute(weather);
+    public void update(List<Weather> weatherData) {
+        WeatherDatabase.databaseWriteExecutor.execute(() -> {
+            mWeatherDao.update(weatherData);
+        });
     }
 
-    public void deleteAllWeathers(){
-        new DeleteAllWeathersAsyncTask(mWeatherDao).execute();
-    }
-
-    public LiveData<List<WeatherEntity>> getAllWeathers(){
-        return allWeathers;
-    }
-
-
-    //DO IN BACKGROUND
-    private static class InsertWeatherAsyncTask extends AsyncTask<WeatherEntity, Void, Void> {
-
-    private WeatherDao weatherDao;
-    private InsertWeatherAsyncTask(WeatherDao weatherDao){
-        this.weatherDao = weatherDao;
-    }
-        @Override
-        protected Void doInBackground(WeatherEntity... weathers) {
-        weatherDao.insert(weathers[0]);
-            return null;
-        }
+    public RequestQueue getQueue() {
+        return mDownloader.getQueue();
     }
 
 
-    private static class UpdateWeatherAsyncTask extends AsyncTask<WeatherEntity, Void, Void> {
-
-        private WeatherDao weatherDao;
-        private UpdateWeatherAsyncTask(WeatherDao weatherDao){
-            this.weatherDao = weatherDao;
-        }
-        @Override
-        protected Void doInBackground(WeatherEntity... weathers) {
-            weatherDao.update(weathers[0]);
-            return null;
-        }
+    public void delete(Weather weather) {
+        WeatherDatabase.databaseWriteExecutor.execute(() -> {
+            mWeatherDao.delete(weather);
+        });
     }
 
-    private static class DeleteWeatherAsyncTask extends AsyncTask<WeatherEntity, Void, Void> {
-
-        private WeatherDao weatherDao;
-        private DeleteWeatherAsyncTask(WeatherDao weatherDao){
-            this.weatherDao = weatherDao;
-        }
-        @Override
-        protected Void doInBackground(WeatherEntity... weathers) {
-            weatherDao.delete(weathers[0]);
-            return null;
-        }
+    public void deleteAllWeatherData() {
+        WeatherDatabase.databaseWriteExecutor.execute(() -> {
+            mWeatherDao.deleteAllWeatherData();
+        });
     }
 
-    private static class DeleteAllWeathersAsyncTask extends AsyncTask<Void, Void, Void> {
-
-        private WeatherDao weatherDao;
-        private DeleteAllWeathersAsyncTask(WeatherDao weatherDao){
-            this.weatherDao = weatherDao;
-        }
-        @Override
-        protected Void doInBackground(Void... voids) {
-            weatherDao.deleteAllWeathers();
-            return null;
-        }
+    public void loadWeatherDataAsync(Context ctx, String longitude, String latitude) {
+        // asynchronous call to download and parse data in the background
+        new Thread() {
+            @Override
+            public void run() {
+                try {
+                    Log.d(LOG_TAG, "Pre async download....");
+                    mDownloader.setUrl(longitude, latitude);
+                    mDownloader.postRequest(new Downloader.VolleyCallback() {
+                        @Override
+                        public void onSuccess(List<Weather> weatherData) {
+                            deleteAllWeatherData();
+                            insert(weatherData);
+                            Toast toast = Toast.makeText(ctx, R.string.data_updated,
+                                    Toast.LENGTH_SHORT);
+                            toast.show();
+                        }
+                    });
+                } catch (Exception e) {
+                    // do nothing or clear LiveData;
+                    // to signal errors from background tasks we need custom data class
+                    e.printStackTrace();
+                }
+            }
+        }.start();
     }
-
-
 }

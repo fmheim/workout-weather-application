@@ -13,11 +13,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import se.kth.fmheim.workoutweather.R;
-import se.kth.fmheim.workoutweather.data.WeatherEntity;
+import se.kth.fmheim.workoutweather.data.Weather;
 
 public class WeatherItemsAdapter extends RecyclerView.Adapter<WeatherItemsAdapter.WeatherItemsViewHolder> {
     private ArrayList<WeatherItem> mWeatherItemList;
-   private List<WeatherEntity> weathers = new ArrayList<>();
+   private List<Weather> mWeatherData = new ArrayList<>();
 
     public static class WeatherItemsViewHolder extends RecyclerView.ViewHolder {
 
@@ -76,8 +76,8 @@ public class WeatherItemsAdapter extends RecyclerView.Adapter<WeatherItemsAdapte
         holder.mTextTemperature.setText(currentItem.getTextTemperature());
         holder.mTextWorkout.setText(currentItem.getTextWorkout());
     }
-    public void setWeathers(List<WeatherEntity> weathers){
-        this.weathers = weathers;
+    public void setWeatherData(List<Weather> weatherData){
+        mWeatherData = weatherData;
         notifyDataSetChanged();
     }
 

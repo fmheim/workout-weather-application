@@ -12,21 +12,27 @@ import java.util.List;
 @Dao
 public interface WeatherDao {
 
+    /*
+    Data access object
+     */
+
     @Insert
-    void insert(WeatherEntity weather);
+    void insert(List<Weather> weatherData);
+
+
 
     @Update
-    void update(WeatherEntity weather);
+    void update(List<Weather> weatherData);
 
     @Delete
-    void delete(WeatherEntity weather);
+    void delete(Weather weather);
 
     @Query("DELETE FROM weather_table")
-    void deleteAllWeathers();
+    void deleteAllWeatherData();
 
     @Query("SELECT * FROM weather_table")
-    LiveData<List<WeatherEntity>> getAllWeathers();
+    LiveData<List<Weather>> getLiveWeatherData();
 
-
-
+    @Query("SELECT * FROM weather_table")
+    List<Weather> getWeatherData();
 }

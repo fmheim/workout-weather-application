@@ -21,7 +21,8 @@
         android:textColorHint="#B92A84A1"
         android:textSize="14sp"
         app:layout_constraintBottom_toTopOf="@+id/editText_latitude"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        android:autofillHints="14.333" />
 
     <EditText
         android:id="@+id/editText_latitude"
@@ -37,7 +38,8 @@
         android:textColorHint="#B92A84A1"
         android:textSize="14sp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        android:autofillHints="60.383" />
 
     <Button
         android:id="@+id/button_changeLocation"
@@ -49,13 +51,21 @@
         android:layout_marginEnd="21dp"
         android:layout_marginRight="21dp"
         android:layout_marginBottom="13dp"
+        android:onClick="onChangeLocation"
+        android:shadowColor="#CE000000"
+        android:shadowDx="500"
+        android:shadowDy="500"
+        android:shadowRadius="1"
         android:text="@string/button_change_location"
         app:backgroundTint="#133742"
+        app:cornerRadius="21dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+
         app:layout_constraintStart_toEndOf="@+id/editText_latitude"
-        app:layout_constraintTop_toBottomOf="@+id/recyclerView"
-        android:onClick="onChangeLocation"/>
+        app:layout_constraintTop_toBottomOf="@+id/recyclerView" />
+
+
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"
@@ -69,19 +79,61 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView_appovedTime" />
+        app:layout_constraintTop_toBottomOf="@+id/textView_approvedTime" />
+
 
     <TextView
-        android:id="@+id/textView_appovedTime"
+        android:id="@+id/textView_approvedTime"
         android:layout_width="wrap_content"
         android:layout_height="17sp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
         android:text="@string/approved_time"
-        android:textColor="#2F90AE"
+        android:textColor="#3DAED1"
         android:textSize="12sp"
         android:textStyle="italic"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/textView_coordinates"
+        android:layout_width="wrap_content"
+        android:layout_height="17sp"
+        android:layout_marginStart="1dp"
+        android:layout_marginLeft="1dp"
+        android:textColor="#FF3DAED1"
+        android:textSize="12sp"
+        android:textStyle="italic"
+        app:layout_constraintStart_toEndOf="@+id/imageView3"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/imageView3"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_marginTop="1dp"
+        android:layout_marginBottom="1dp"
+        app:layout_constraintBottom_toTopOf="@+id/recyclerView"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/coordinates"
+        android:contentDescription="@string/location_symbol" />
+
+    <TextView
+        android:id="@+id/textView_noNet"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_marginTop="3dp"
+        android:text="@string/no_network_connection"
+        android:textAllCaps="true"
+        android:textColor="#B7FF0000"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toTopOf="@+id/button_changeLocation"
+        app:layout_constraintEnd_toEndOf="@+id/button_changeLocation"
+        app:layout_constraintStart_toStartOf="@+id/button_changeLocation"
+        app:layout_constraintTop_toBottomOf="@+id/recyclerView" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
