@@ -3,63 +3,95 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    app:cardCornerRadius="21dp"
-    app:cardElevation="3dp">
+    android:layout_marginStart="0dp"
+    android:layout_marginLeft="0dp"
+    android:layout_marginTop="0dp"
+    android:layout_marginEnd="0dp"
+    android:layout_marginRight="0dp"
+    android:layout_marginBottom="8dp"
+    app:cardBackgroundColor="@android:color/transparent"
+
+    app:cardCornerRadius="13dp"
+    app:cardElevation="0dp">
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_margin="8dp"
-        >
+        android:layout_margin="0dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginBottom="1dp"
+        android:background="#0C000000">
+
 
         <ImageView
             android:id="@+id/imageView_weatherSymbol"
             android:layout_width="100dp"
             android:layout_height="100dp"
-            android:padding="3dp"/>
+            android:layout_marginStart="-10dp"
+            android:layout_marginLeft="-10dp"
+            android:layout_toEndOf="@+id/textView_Date"
+            android:layout_toRightOf="@+id/textView_Date"
+            android:padding="3dp" />
 
         <TextView
             android:id="@+id/textView_Date"
-            android:layout_width="wrap_content"
-            android:layout_height="20sp"
+            android:layout_width="100sp"
+            android:layout_height="80sp"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentLeft="true"
             android:layout_alignParentTop="true"
             android:layout_marginStart="13dp"
+
             android:layout_marginLeft="13dp"
-            android:layout_marginTop="0dp"
-            android:layout_toEndOf="@id/imageView_weatherSymbol"
-            android:layout_toRightOf="@id/imageView_weatherSymbol"
+            android:layout_marginTop="10dp"
+            android:gravity="center|left"
+            android:text="Wednesday \n20 Nov \n12:00"
             android:textColor="@android:color/black"
-            android:textSize="14sp"
+            android:textSize="17sp"
             android:textStyle="bold" />
 
         <TextView
             android:id="@+id/textView_temperature"
             android:layout_width="wrap_content"
-            android:layout_height="50sp"
-            android:layout_below="@id/textView_Date"
-            android:layout_marginStart="21dp"
-            android:layout_marginLeft="21dp"
-            android:layout_marginTop="13dp"
+            android:layout_height="35sp"
+
+            android:layout_alignParentTop="true"
+            android:layout_marginStart="13dp"
+            android:layout_marginLeft="13dp"
+            android:layout_marginTop="5dp"
             android:layout_toEndOf="@id/imageView_weatherSymbol"
             android:layout_toRightOf="@id/imageView_weatherSymbol"
-            android:textColor="@android:color/black"
-            android:textSize="24sp"
-            android:textStyle="bold"
 
-            />
+            android:gravity="center"
+            android:text="15°C"
+            android:textColor="@android:color/black"
+            android:textSize="30sp"
+            android:textStyle="bold" />
 
         <TextView
             android:id="@+id/textView_workOut"
             android:layout_width="wrap_content"
-            android:layout_height="60sp"
-            android:layout_below="@id/textView_Date"
-            android:layout_marginStart="21dp"
-            android:layout_marginLeft="21dp"
-            android:layout_marginTop="13dp"
-            android:layout_toEndOf="@id/textView_temperature"
-            android:layout_toRightOf="@id/textView_temperature"
+            android:layout_height="55sp"
+
+            android:layout_below="@+id/textView_temperature"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginStart="13dp"
+            android:layout_marginLeft="13dp"
+            android:layout_marginTop="0dp"
+            android:layout_marginEnd="13dp"
+            android:layout_marginRight="13dp"
+            android:layout_toEndOf="@+id/imageView_weatherSymbol"
+            android:layout_toRightOf="@+id/imageView_weatherSymbol"
+            android:gravity="center|left"
+            android:text="here could be a nice workout recomm"
+            android:textColor="#D0000000"
             android:textSize="13sp"
-            android:textStyle="italic" />
+            android:textStyle="bold|italic" />
 
 
     </RelativeLayout>

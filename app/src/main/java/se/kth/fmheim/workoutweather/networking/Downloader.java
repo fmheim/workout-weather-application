@@ -24,6 +24,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.ParseException;
 import java.util.List;
 
 import se.kth.fmheim.workoutweather.R;
@@ -63,34 +64,40 @@ public class Downloader {
 
     public void setCityUrl(String cityName) {
         mCityUrl = "https://www.smhi.se/wpt-a/backend_solr/autocomplete/search/" + cityName;
-     //mCityUrl = "https://maceo.sth.kth.se/wpt-a/backend_solr/autocomplete/search/" + cityName;
+        //mCityUrl = "https://maceo.sth.kth.se/wpt-a/backend_solr/autocomplete/search/" + cityName;
     }
 
     public void postRequest(final VolleyCallback callback) {
 
-        JsonArrayRequest jArequest = new JsonArrayRequest(Request.Method.GET,
+        JsonArrayRequest cityRequest = new JsonArrayRequest(Request.Method.GET,
                 mCityUrl,
                 null,
                 new Response.Listener<JSONArray>() {
                     @Override
                     public void onResponse(JSONArray root) {
-                        Log.d(LOG_TAG, "Response from volley request gotten from\n " +
+                        /*
+                        On response of city information --> download weather data!
+                         */
+                        Log.d(LOG_TAG, "City-Response from volley request gotten from\n " +
                                 mCityUrl);
                         try {
                             mCoordinates = parser.parseToCoordinates(root);
                             setWeatherUrl(mCoordinates[0], mCoordinates[1]);
-                            JsonObjectRequest jOrequest = new JsonObjectRequest(Request.Method.GET,
+                            JsonObjectRequest weatherRequest = new JsonObjectRequest(Request.Method.GET,
                                     mWeatherUrl,
                                     null,
                                     new Response.Listener<JSONObject>() {
                                         @Override
                                         public void onResponse(JSONObject root) {
-                                            Log.d(LOG_TAG, "Response from volley request gotten from\n " +
+                                            Log.d(LOG_TAG, "Weather-Response from volley request gotten from\n " +
                                                     mWeatherUrl + " " + mCoordinates[0] + " " + mCoordinates[1]);
                                             try {
                                                 mWeatherData = parser.parseToWeather(root);
                                                 callback.onSuccess(mWeatherData); //to return List with weatherData
-                                            } catch (JSONException mE) {
+                                            } catch (JSONException | ParseException mE) {
+                                                Toast toast = Toast.makeText(mCtx, R.string.download_not_possible,
+                                                        Toast.LENGTH_LONG);
+                                                toast.show();
                                                 mE.printStackTrace();
                                             }
                                         }
@@ -98,14 +105,18 @@ public class Downloader {
                                     new Response.ErrorListener() {
                                         @Override
                                         public void onErrorResponse(VolleyError mVolleyError) {
-                                            Toast toast = Toast.makeText(mCtx, R.string.out_off_bounds,
-                                                    Toast.LENGTH_SHORT);
+                                            Toast toast = Toast.makeText(mCtx, R.string.download_not_possible,
+                                                    Toast.LENGTH_LONG);
                                             toast.show();
                                             mVolleyError.printStackTrace();
                                         }
                                     });
-                            mQueue.add(jOrequest);
+                            weatherRequest.setTag(mCtx);
+                            mQueue.add(weatherRequest);
                         } catch (JSONException mE) {
+                            Toast toast = Toast.makeText(mCtx, R.string.download_not_possible,
+                                    Toast.LENGTH_LONG);
+                            toast.show();
                             mE.printStackTrace();
                         }
                     }
@@ -113,22 +124,21 @@ public class Downloader {
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError mVolleyError) {
-                        Toast toast = Toast.makeText(mCtx, R.string.out_off_bounds,
-                                Toast.LENGTH_SHORT);
+                        Toast toast = Toast.makeText(mCtx, R.string.download_not_possible,
+                                Toast.LENGTH_LONG);
                         toast.show();
                         mVolleyError.printStackTrace();
                     }
                 });
-        mQueue.add(jArequest);
-
-
+        cityRequest.setTag(mCtx);
+        mQueue.add(cityRequest);
     }
 
     private void setWeatherUrl(String longitude, String latitude) {
         //mWeatherUrl = "https://maceo.sth.kth.se/api/category/pmp3g/version/2/geotype/point/lon/"
-               // + longitude + "/lat/" + latitude + "/"; //for development
+        // + longitude + "/lat/" + latitude + "/"; //for development
         mWeatherUrl = "https://opendata-download-metfcst.smhi.se/api/category/pmp3g/version/2/geotype/point/lon/"
-        + longitude + "/lat/" + latitude + "/data.json";
+                + longitude + "/lat/" + latitude + "/data.json";
     }
 
     public interface VolleyCallback {

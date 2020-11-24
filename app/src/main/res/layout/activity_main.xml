@@ -2,26 +2,26 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#0D262E"
+    android:background="@drawable/backgroud_gradient"
     tools:context=".MainActivity">
 
-    <EditText
-        android:id="@+id/editText_cityName"
+    <AutoCompleteTextView
+        android:id="@+id/autoEditText_cityName"
         android:layout_width="wrap_content"
         android:layout_height="0dp"
         android:layout_marginStart="21dp"
         android:layout_marginLeft="21dp"
-        android:layout_marginBottom="13dp"
-        android:autofillHints="Cities"
+        android:layout_marginBottom="34dp"
+        android:autofillHints="City"
         android:ems="10"
         android:hint="@string/cityName_hint"
-        android:inputType="textPersonName"
-
+        android:inputType="textAutoComplete"
         android:textColor="#35A0C1"
         android:textColorHint="#B92A84A1"
-        android:textSize="14sp"
+        android:textSize="15sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
@@ -29,25 +29,24 @@
     <Button
         android:id="@+id/button_changeLocation"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:layout_marginStart="21dp"
         android:layout_marginLeft="21dp"
-        android:layout_marginTop="21dp"
         android:layout_marginEnd="21dp"
         android:layout_marginRight="21dp"
-        android:layout_marginBottom="13dp"
+        android:layout_marginBottom="8dp"
         android:onClick="onChangeLocation"
         android:shadowColor="#CE000000"
         android:shadowDx="500"
         android:shadowDy="500"
         android:shadowRadius="1"
         android:text="@string/button_change_location"
-        app:backgroundTint="#133742"
 
+        app:backgroundTint="#133742"
         app:cornerRadius="21dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/editText_cityName"
+        app:layout_constraintStart_toEndOf="@+id/autoEditText_cityName"
         app:layout_constraintTop_toBottomOf="@+id/recyclerView" />
 
 
@@ -55,22 +54,24 @@
         android:id="@+id/recyclerView"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginTop="5dp"
-        android:layout_marginBottom="21dp"
-        android:background="#184451"
-        android:padding="13dp"
+        android:background="@android:color/transparent"
+        android:padding="8dp"
         android:scrollbars="vertical"
-        app:layout_constraintBottom_toTopOf="@+id/editText_cityName"
+        app:layout_constraintBottom_toTopOf="@+id/autoEditText_cityName"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView_approvedTime" />
+        app:layout_constraintTop_toBottomOf="@+id/textView_approvedTime">
+
+        <requestFocus />
+    </androidx.recyclerview.widget.RecyclerView>
 
 
     <TextView
         android:id="@+id/textView_approvedTime"
         android:layout_width="wrap_content"
         android:layout_height="17sp"
+        android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginRight="8dp"
         android:text="@string/approved_time"
@@ -86,6 +87,7 @@
         android:layout_height="17sp"
         android:layout_marginStart="3dp"
         android:layout_marginLeft="3dp"
+        android:layout_marginTop="8dp"
         android:textColor="#FF3DAED1"
         android:textSize="13sp"
         android:textStyle="italic"
@@ -96,8 +98,9 @@
         android:id="@+id/imageView3"
         android:layout_width="wrap_content"
         android:layout_height="0dp"
-        android:layout_marginTop="1dp"
-        android:layout_marginBottom="4dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="8dp"
         android:contentDescription="@string/location_symbol"
         app:layout_constraintBottom_toTopOf="@+id/recyclerView"
         app:layout_constraintStart_toStartOf="parent"
@@ -107,18 +110,16 @@
     <TextView
         android:id="@+id/textView_noNet"
         android:layout_width="wrap_content"
-        android:layout_height="0dp"
-        android:layout_marginTop="3dp"
+        android:layout_height="15sp"
         android:text="@string/no_network_connection"
         android:textAllCaps="true"
         android:textColor="#B7FF0000"
         android:textSize="12sp"
         android:textStyle="bold"
         android:visibility="invisible"
-        app:layout_constraintBottom_toTopOf="@+id/button_changeLocation"
-        app:layout_constraintEnd_toEndOf="@+id/button_changeLocation"
-        app:layout_constraintStart_toStartOf="@+id/button_changeLocation"
-        app:layout_constraintTop_toBottomOf="@+id/recyclerView" />
+        app:layout_constraintEnd_toEndOf="@+id/autoEditText_cityName"
+        app:layout_constraintStart_toStartOf="@+id/autoEditText_cityName"
+        app:layout_constraintTop_toBottomOf="@+id/autoEditText_cityName" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

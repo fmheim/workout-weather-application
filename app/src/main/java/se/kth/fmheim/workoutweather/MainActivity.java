@@ -7,7 +7,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.View;
-import android.widget.EditText;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -16,6 +17,8 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.android.volley.RequestQueue;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,22 +34,24 @@ public class MainActivity extends AppCompatActivity {
     //logging
     private static final String LOG_TAG = MainActivity.class.getSimpleName();
     //views
-    private EditText editCityName;
+    private AutoCompleteTextView editCityName;
     private TextView texViewApprovedTime;
     private TextView textViewCityName;
     private TextView textViewNoNet;
     private RecyclerView recyclerView;
+    String[] cities = {" Göteborg", " Luleå", " Lund", " Malmö", " Stockholm", " Uppsala"};
     //data
     private WeatherRepository weatherRepository;
     private String mCityName;
-
     //network
-    private long lastDownload;
-    private boolean isConnected;
-    private static final int DOWNLOAD_CHECK_INTERVAL = 600000; // every 10min
+    private RequestQueue mRequestQueue;
+    private static long lastDownload;
+    private static boolean isConnected;
+    private static final int DOWNLOAD_UPDATE_INTERVAL = 600000; // every 10min
     private static final int NET_CHECK_INTERVAL = 2000; //every 2 seconds
     private final Handler timerHandler = new Handler();
     private final Runnable timerRunnable = new Runnable() {
+        //for checking network connection
         @Override
         public void run() {
             ConnectivityManager connectivityManager = (ConnectivityManager) getApplication()
@@ -59,7 +64,24 @@ public class MainActivity extends AppCompatActivity {
                 textViewNoNet.setVisibility(View.INVISIBLE);
             } else if (!isConnected && !isVisible)
                 textViewNoNet.setVisibility(View.VISIBLE);
+
+            //Update if download is older than download update interval
+            String cityNameField = textViewCityName.getText().toString();
+            Log.d(LOG_TAG, "No download since [sec]:  " + (System.currentTimeMillis()-lastDownload)/1000);
+            if (!cityNameField.trim().isEmpty()) {
+                mCityName = cityNameField;
+                if (isConnected &&
+                        (System.currentTimeMillis() - lastDownload) > DOWNLOAD_UPDATE_INTERVAL) {
+                    weatherRepository.loadWeatherDataAsync(mCityName);
+                    lastDownload = System.currentTimeMillis();
+                    Toast toast = Toast.makeText(getApplicationContext(), R.string.weather_updated,
+                            Toast.LENGTH_SHORT);
+                    toast.show();
+                    Log.d(LOG_TAG, "Updated weather for " + mCityName);
+                }
+            }
             timerHandler.postDelayed(this, NET_CHECK_INTERVAL);
+           // Log.d(LOG_TAG, "Timer: Is connected? " + isConnected);
         }
     };
 
@@ -69,13 +91,34 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         //views
         setContentView(R.layout.activity_main);
-        editCityName = (EditText) findViewById(R.id.editText_cityName);
+        editCityName = (AutoCompleteTextView) findViewById(R.id.autoEditText_cityName);
         recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
         texViewApprovedTime = (TextView) findViewById(R.id.textView_approvedTime);
         textViewCityName = (TextView) findViewById(R.id.textView_cityName);
         textViewNoNet = (TextView) findViewById(R.id.textView_noNet);
+        //Autocomplete
+        ArrayAdapter autoCompleteAdapter = new
+                ArrayAdapter(this,
+                android.R.layout.simple_list_item_1,
+                cities);
+        editCityName.setAdapter(autoCompleteAdapter);
+        editCityName.setThreshold(0);
+        editCityName.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                editCityName.showDropDown();
+            }
+
+        });
+        editCityName.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                editCityName.showDropDown();
+            }
+        });
         //data
         weatherRepository = new WeatherRepository(this.getApplication());
+        mRequestQueue = weatherRepository.getRequestQueue();
         /*
         create a ViewModel the first time the system calls this activity's onCreate();
         re-created activities instances receive the same ViewModel instance created
@@ -93,33 +136,24 @@ public class MainActivity extends AppCompatActivity {
                     printApprovedTime(weatherData.get(0));
                     printCityName(weatherData.get(0));
                     Log.d(LOG_TAG, "Size of List: " + weatherData.size());
+                    boolean onChangedFinished = true;
                 }
             }
         });
-        //network
-        lastDownload = 0;
-        timerHandler.postDelayed(timerRunnable, 0);
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        String cityNameField = textViewCityName.getText().toString();
-        if (!cityNameField.trim().isEmpty()) {
-            mCityName = cityNameField;
-            if (isConnected &&
-                    (System.currentTimeMillis() - lastDownload) > DOWNLOAD_CHECK_INTERVAL) {
-                weatherRepository.loadWeatherDataAsync(this, mCityName);
-                lastDownload = 0;
-                Log.d(LOG_TAG, "On Start, " + mCityName);
-            }
-        }
+        //network check and auto update timer
+        timerHandler.postDelayed(timerRunnable, 0);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
         timerHandler.removeCallbacks(timerRunnable);
+        mRequestQueue.cancelAll(this);
     }
 
     public void onChangeLocation(View view) {
@@ -131,7 +165,10 @@ public class MainActivity extends AppCompatActivity {
                 toast.show();
             } else {
                 Log.d(LOG_TAG, "Pre loadWeatherDataAsync....");
-                weatherRepository.loadWeatherDataAsync(this, mCityName);
+                weatherRepository.loadWeatherDataAsync(mCityName);
+                Toast toast = Toast.makeText(this, R.string.download_complete,
+                        Toast.LENGTH_SHORT);
+                toast.show();
                 lastDownload = System.currentTimeMillis();
             }
         } else {
@@ -153,8 +190,8 @@ public class MainActivity extends AppCompatActivity {
         ArrayList<WeatherItem> weatherItemList = new ArrayList<>();
         for (Weather weatherAtTime : weatherData) {
             int weatherSymbol = weatherAtTime.getSymbol();
-            String date = weatherAtTime.getDate() + ", " + weatherAtTime.getTime() + " o'clock";
-            String temperature = weatherAtTime.getTemperature() + " °C";
+            String date = weatherAtTime.getDate() + "\n" + weatherAtTime.getTime();
+            String temperature = weatherAtTime.getTemperature() + "°C";
             String workoutRecommendation = weatherAtTime.getWorkoutRecommendation();
             weatherItemList.add(new WeatherItem(weatherSymbol, date, temperature, workoutRecommendation));
         }
@@ -162,6 +199,7 @@ public class MainActivity extends AppCompatActivity {
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(adapter);
+        adapter.notifyDataSetChanged();
         Log.d(LOG_TAG, "...filled recycler view");
 
     }
@@ -181,4 +219,6 @@ public class MainActivity extends AppCompatActivity {
         String cityName = oneWeather.getCityName();
         textViewCityName.setText(cityName);
     }
+
+
 }

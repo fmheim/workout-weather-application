@@ -23,4 +23,5 @@ public interface WeatherDao {
 
     @Query("SELECT * FROM weather_table")
     LiveData<List<Weather>> getLiveWeatherData();
+
 }
