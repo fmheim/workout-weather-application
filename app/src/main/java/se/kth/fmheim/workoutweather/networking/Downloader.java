@@ -1,13 +1,10 @@
-/*
-Felix Heim
-Mobile Application
-Assignment 1
-
-Unfortunately not all features implemented due to lack of time!
- */
-
-
 package se.kth.fmheim.workoutweather.networking;
+/*
+Class to download json data from the internet
+using volley
+first downloading city information
+then - on response - using the parsed coordinates to download weather data
+ */
 
 import android.content.Context;
 import android.util.Log;
@@ -67,8 +64,19 @@ public class Downloader {
         //mCityUrl = "https://maceo.sth.kth.se/wpt-a/backend_solr/autocomplete/search/" + cityName;
     }
 
-    public void postRequest(final VolleyCallback callback) {
+    private void setWeatherUrl(String longitude, String latitude) {
+        //mWeatherUrl = "https://maceo.sth.kth.se/api/category/pmp3g/version/2/geotype/point/lon/"
+        // + longitude + "/lat/" + latitude + "/"; //for development
+        mWeatherUrl = "https://opendata-download-metfcst.smhi.se/api/category/pmp3g/version/2/geotype/point/lon/"
+                + longitude + "/lat/" + latitude + "/data.json";
+    }
 
+    public interface VolleyCallback {
+        // to return List of Weather when it was received from responseListener
+        void onSuccess(List<Weather> weatherData);
+    }
+
+    public void postRequest(final VolleyCallback callback) {
         JsonArrayRequest cityRequest = new JsonArrayRequest(Request.Method.GET,
                 mCityUrl,
                 null,
@@ -132,18 +140,6 @@ public class Downloader {
                 });
         cityRequest.setTag(mCtx);
         mQueue.add(cityRequest);
-    }
-
-    private void setWeatherUrl(String longitude, String latitude) {
-        //mWeatherUrl = "https://maceo.sth.kth.se/api/category/pmp3g/version/2/geotype/point/lon/"
-        // + longitude + "/lat/" + latitude + "/"; //for development
-        mWeatherUrl = "https://opendata-download-metfcst.smhi.se/api/category/pmp3g/version/2/geotype/point/lon/"
-                + longitude + "/lat/" + latitude + "/data.json";
-    }
-
-    public interface VolleyCallback {
-        // to return List of Weather when it was received from responseListener
-        void onSuccess(List<Weather> weatherData);
     }
 
 

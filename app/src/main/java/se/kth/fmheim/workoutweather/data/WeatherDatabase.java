@@ -1,4 +1,7 @@
 package se.kth.fmheim.workoutweather.data;
+/*
+Data base in which weather objects are stored
+ */
 
 import android.content.Context;
 import android.util.Log;
@@ -20,7 +23,7 @@ public abstract class WeatherDatabase extends RoomDatabase {
 
     public abstract WeatherDao weatherDao();
 
-    private static volatile WeatherDatabase INSTANCE;
+    private static volatile WeatherDatabase INSTANCE; //volatile = read from main memory
     private static final int NUMBER_OF_THREADS = 4;
     static final ExecutorService databaseWriteExecutor =
             Executors.newFixedThreadPool(NUMBER_OF_THREADS);  //to run in background
@@ -48,24 +51,19 @@ public abstract class WeatherDatabase extends RoomDatabase {
         @Override
         public void onCreate(@NonNull SupportSQLiteDatabase database) {
             super.onCreate(database);
-
-            // If you want to keep data through app restarts,
-            // comment out the following block
             databaseWriteExecutor.execute(() -> {
-                // Populate the database in the background.
+                // Populate the database in the background, for first installation of app
                 WeatherDao dao = INSTANCE.weatherDao();
                 dao.deleteAllWeatherData();
-
                 List<Weather> startWeatherData = new ArrayList<>();
                 Weather weather = new Weather();
+
                 startWeatherData.add(weather);
                 startWeatherData.add(weather);
                 startWeatherData.add(weather);
 
                 dao.insert(startWeatherData);
                 Log.d(LOG_TAG, "New Database initialized.");
-                Log.d(LOG_TAG, "Approved Time database init: " + weather.getApprovedTime());
-
             });
         }
     };

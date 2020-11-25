@@ -1,8 +1,12 @@
 package se.kth.fmheim.workoutweather.data;
+/*
+Class to create weather objects
+ - weather data for certain time
+Annotations for database
+ */
 
 import android.util.Log;
 
-import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
@@ -12,7 +16,6 @@ import se.kth.fmheim.workoutweather.R;
 @Entity(tableName = "weather_table")
 public class Weather {
     private static final String LOG_TAG = Weather.class.getSimpleName();
-
 
     @PrimaryKey(autoGenerate = true)
     private int id;
@@ -48,7 +51,6 @@ public class Weather {
         mWorkoutRecommendation = "Here you'll find a recommendation for your next work out";
         mReferenceTime = "No reference time yet";
         Log.d(LOG_TAG, "init");
-
     }
 
     /*

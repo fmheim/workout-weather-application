@@ -1,4 +1,13 @@
 package se.kth.fmheim.workoutweather;
+/*
+Felix Heim
+Assignment 1, Android
+Mobile Sports Application and Datamining
+Sports Technology
+KTH
+November 2020
+Simple weather app with workout recommendation
+ */
 
 import android.content.Context;
 import android.net.ConnectivityManager;
@@ -35,11 +44,11 @@ public class MainActivity extends AppCompatActivity {
     private static final String LOG_TAG = MainActivity.class.getSimpleName();
     //views
     private AutoCompleteTextView editCityName;
-    private TextView texViewApprovedTime;
+    private TextView textViewApprovedTime;
     private TextView textViewCityName;
     private TextView textViewNoNet;
     private RecyclerView recyclerView;
-    String[] cities = {" Göteborg", " Luleå", " Lund", " Malmö", " Stockholm", " Uppsala"};
+    String[] defaultCities = {" Göteborg", " Luleå", " Lund", " Malmö", " Stockholm", " Uppsala"};
     //data
     private WeatherRepository weatherRepository;
     private String mCityName;
@@ -64,24 +73,27 @@ public class MainActivity extends AppCompatActivity {
                 textViewNoNet.setVisibility(View.INVISIBLE);
             } else if (!isConnected && !isVisible)
                 textViewNoNet.setVisibility(View.VISIBLE);
-
             //Update if download is older than download update interval
-            String cityNameField = textViewCityName.getText().toString();
-            Log.d(LOG_TAG, "No download since [sec]:  " + (System.currentTimeMillis()-lastDownload)/1000);
-            if (!cityNameField.trim().isEmpty()) {
-                mCityName = cityNameField;
+            String oldCityName = textViewCityName.getText().toString().trim();
+            Log.d(LOG_TAG, "No download since:  "
+                    + (System.currentTimeMillis() - lastDownload) / 1000 + " seconds");
+            if (!oldCityName.isEmpty()) {
+                mCityName = oldCityName;
                 if (isConnected &&
                         (System.currentTimeMillis() - lastDownload) > DOWNLOAD_UPDATE_INTERVAL) {
-                    weatherRepository.loadWeatherDataAsync(mCityName);
+                    String oldApprovedTime = textViewApprovedTime.getText().toString();
+                    weatherRepository.loadAndInsertData(mCityName);
                     lastDownload = System.currentTimeMillis();
-                    Toast toast = Toast.makeText(getApplicationContext(), R.string.weather_updated,
-                            Toast.LENGTH_SHORT);
-                    toast.show();
-                    Log.d(LOG_TAG, "Updated weather for " + mCityName);
+                    if (!textViewApprovedTime.getText().toString().equals(oldApprovedTime)) {
+                        Toast toast = Toast.makeText(getApplicationContext(), R.string.weather_updated,
+                                Toast.LENGTH_SHORT);
+                        toast.show();
+                        Log.d(LOG_TAG, "Updated weather for " + mCityName);
+                    }
                 }
             }
             timerHandler.postDelayed(this, NET_CHECK_INTERVAL);
-           // Log.d(LOG_TAG, "Timer: Is connected? " + isConnected);
+            // Log.d(LOG_TAG, "Timer: Is connected? " + isConnected);
         }
     };
 
@@ -93,23 +105,16 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         editCityName = (AutoCompleteTextView) findViewById(R.id.autoEditText_cityName);
         recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
-        texViewApprovedTime = (TextView) findViewById(R.id.textView_approvedTime);
+        textViewApprovedTime = (TextView) findViewById(R.id.textView_approvedTime);
         textViewCityName = (TextView) findViewById(R.id.textView_cityName);
         textViewNoNet = (TextView) findViewById(R.id.textView_noNet);
         //Autocomplete
-        ArrayAdapter autoCompleteAdapter = new
-                ArrayAdapter(this,
+        ArrayAdapter autoCompleteAdapter = new ArrayAdapter(
+                this,
                 android.R.layout.simple_list_item_1,
-                cities);
+                defaultCities);
         editCityName.setAdapter(autoCompleteAdapter);
         editCityName.setThreshold(0);
-        editCityName.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                editCityName.showDropDown();
-            }
-
-        });
         editCityName.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -135,7 +140,7 @@ public class MainActivity extends AppCompatActivity {
                     fillRecycleView(weatherData);
                     printApprovedTime(weatherData.get(0));
                     printCityName(weatherData.get(0));
-                    Log.d(LOG_TAG, "Size of List: " + weatherData.size());
+                    Log.d(LOG_TAG, "Size of weather-list: " + weatherData.size());
                     boolean onChangedFinished = true;
                 }
             }
@@ -158,17 +163,31 @@ public class MainActivity extends AppCompatActivity {
 
     public void onChangeLocation(View view) {
         if (isConnected) {
-            mCityName = editCityName.getText().toString();
-            if (mCityName.trim().isEmpty()) {
-                Toast toast = Toast.makeText(this, R.string.wrong_input,
+            mCityName = editCityName.getText().toString().trim();
+            if (mCityName.isEmpty()) {
+                Toast toast = Toast.makeText(this, R.string.empty_input,
                         Toast.LENGTH_SHORT);
                 toast.show();
             } else {
-                Log.d(LOG_TAG, "Pre loadWeatherDataAsync....");
-                weatherRepository.loadWeatherDataAsync(mCityName);
-                Toast toast = Toast.makeText(this, R.string.download_complete,
-                        Toast.LENGTH_SHORT);
-                toast.show();
+                Log.d(LOG_TAG, "Pre loadAndInsertData....");
+                String oldApprovedTime = textViewApprovedTime.getText().toString();
+                String oldCityName = textViewCityName.getText().toString();
+                weatherRepository.loadAndInsertData(mCityName);
+
+                //if something changed toast download complete
+                if (!textViewApprovedTime.getText().toString().equals(oldApprovedTime)
+                        || !oldCityName.equals(textViewCityName.getText().toString())) {
+                    Toast toast = Toast.makeText(getApplicationContext(), R.string.download_complete,
+                            Toast.LENGTH_SHORT);
+                    toast.show();
+
+               //if input same as city name and same approved time toast up to date
+                } else if (textViewApprovedTime.getText().toString().equals(oldApprovedTime)
+                        && (oldCityName.equals(mCityName))) {
+                    Toast toast = Toast.makeText(getApplicationContext(), R.string.up_to_date,
+                            Toast.LENGTH_SHORT);
+                    toast.show();
+                }//else download not possible from downloader
                 lastDownload = System.currentTimeMillis();
             }
         } else {
@@ -184,7 +203,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void fillRecycleView(List<Weather> weatherData) {
         /*
-        For each element in List with weather data at time
+        For each element in list with weather data  at time (gotten from live data change)
         a weather item in the recycler view is filled
         */
         ArrayList<WeatherItem> weatherItemList = new ArrayList<>();
@@ -193,7 +212,7 @@ public class MainActivity extends AppCompatActivity {
             String date = weatherAtTime.getDate() + "\n" + weatherAtTime.getTime();
             String temperature = weatherAtTime.getTemperature() + "°C";
             String workoutRecommendation = weatherAtTime.getWorkoutRecommendation();
-            weatherItemList.add(new WeatherItem(weatherSymbol, date, temperature, workoutRecommendation));
+            weatherItemList.add(new WeatherItem(weatherSymbol, date, temperature, workoutRecommendation)); //fill Item and add to list
         }
         RecyclerView.Adapter<WeatherItemsAdapter.WeatherItemsViewHolder> adapter = new WeatherItemsAdapter(weatherItemList);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
@@ -201,7 +220,6 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setAdapter(adapter);
         adapter.notifyDataSetChanged();
         Log.d(LOG_TAG, "...filled recycler view");
-
     }
 
     private void printApprovedTime(Weather oneWeather) {
@@ -209,16 +227,15 @@ public class MainActivity extends AppCompatActivity {
         if (approvedTime.indexOf("2") == 0) {
             String date = approvedTime.substring(0, 10);
             String time = approvedTime.substring(11, 19);
-            texViewApprovedTime.setText(getString(R.string.approvedTime, date, time));
+            textViewApprovedTime.setText(getString(R.string.approvedTime, date, time));
         } else
-            texViewApprovedTime.setText(approvedTime); //for init
-        Log.d(LOG_TAG, "...printed approved date recycler view");
+            textViewApprovedTime.setText(approvedTime); //for init
+        Log.d(LOG_TAG, "...printed approved date");
     }
 
     private void printCityName(Weather oneWeather) {
         String cityName = oneWeather.getCityName();
         textViewCityName.setText(cityName);
+        Log.d(LOG_TAG, "...printed approved city name");
     }
-
-
 }

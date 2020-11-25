@@ -1,5 +1,7 @@
 package se.kth.fmheim.workoutweather.view;
-
+    /*
+    class needed to make a view model
+    */
 
 import android.app.Application;
 
@@ -8,12 +10,8 @@ import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
 public class WeatherViewModelFactory implements ViewModelProvider.Factory {
-    /*
-    needed to make a view model
-     */
+
     private final Application mApplication;
-    private String mLongitude;
-    private String mLatitude;
     private static WeatherViewModelFactory instance;
 
     private WeatherViewModelFactory(Application application) {
@@ -36,11 +34,8 @@ public class WeatherViewModelFactory implements ViewModelProvider.Factory {
     @NonNull
     @Override
     public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
-
-        if (modelClass.isAssignableFrom(WeatherViewModel.class)) {
+        if (modelClass.isAssignableFrom(WeatherViewModel.class))
             return (T) new WeatherViewModel(mApplication);
-        }
-
         return null;
     }
 }

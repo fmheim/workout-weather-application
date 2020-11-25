@@ -1,5 +1,8 @@
 package se.kth.fmheim.workoutweather.data;
-
+    /*
+    Interface for data access objects
+    needed to interact with database;
+     */
 import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Delete;
@@ -11,10 +14,6 @@ import java.util.List;
 
 @Dao
 public interface WeatherDao {
-    /*
-    Data access object
-    needed to interact with database;
-     */
     @Insert
     void insert(List<Weather> weatherData);
 
@@ -23,5 +22,4 @@ public interface WeatherDao {
 
     @Query("SELECT * FROM weather_table")
     LiveData<List<Weather>> getLiveWeatherData();
-
 }

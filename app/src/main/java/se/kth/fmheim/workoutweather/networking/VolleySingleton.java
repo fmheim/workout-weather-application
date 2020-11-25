@@ -10,7 +10,7 @@ public class VolleySingleton {
     to create only one request queue that survives entire lifecycle
      */
     private static VolleySingleton mInstance;
-    private RequestQueue mRequestQueue;
+    private final RequestQueue mRequestQueue;
 
     private VolleySingleton(Context context) {
         mRequestQueue = Volley.newRequestQueue(context.getApplicationContext());

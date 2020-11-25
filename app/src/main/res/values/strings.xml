@@ -3,15 +3,16 @@
     <string name="longitude_hint">enter longitude</string>
     <string name="cityName_hint">enter city in Sweden</string>
     <string name="approved_time">approved time:</string>
-    <string name="button_change_location">Change City</string>
-    <string name="wrong_input">No location entered!</string>
+    <string name="button_change_location">Submit</string>
+    <string name="empty_input">No location entered!</string>
     <string name="changed">Changed</string>
     <string name="approvedTime">Approved time: %s, %s</string>
     <string name="no_network_connection">No network connection</string>
     <string name="location_symbol">Location Symbol</string>
     <string name="data_updated">Data updated</string>
     <string name="download_not_possible">Download not possible. Check city name and wifi connection.</string>
-    <string name="download_complete">Download complete.</string>
+    <string name="download_complete">Download complete</string>
     <string name="space_for_auto">" "</string>
-    <string name="weather_updated">Weather updated :)</string>
+    <string name="weather_updated">Weather updated</string>
+    <string name="up_to_date">Data up to date</string>
 </resources>

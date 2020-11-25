@@ -1,4 +1,9 @@
 package se.kth.fmheim.workoutweather.data;
+/*
+Class to parse data fetched from download
+    - setting coordinates from city information download
+    - setting weather data from weather download
+ */
 
 import android.annotation.SuppressLint;
 import android.util.Log;
@@ -7,10 +12,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.text.DateFormatSymbols;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.Month;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -65,7 +68,6 @@ public class JSONParser {
         JSONObject geometry = root.getJSONObject(GEOMETRY);
         JSONArray coordinatesArr = geometry.getJSONArray(COORDINATES);
 
-
         List<Weather> weatherData = new ArrayList<>(); //for each time entry new weather object
         Log.d(LOG_TAG, "parser initialized ");
         for (int i = 0; i < timeSeries.length(); i++) {
@@ -112,10 +114,10 @@ public class JSONParser {
     private String getDate(String validTime) throws ParseException {
         String oldFormat = "yyyy-MM-dd";
         String newFormat = "EEEE\nMMM d";
-        @SuppressLint("SimpleDateFormat") SimpleDateFormat sdf = new SimpleDateFormat(oldFormat);
-        Date d = sdf.parse(validTime.substring(0, 10));
-        sdf.applyPattern(newFormat);
-        return sdf.format(d);
+        @SuppressLint("SimpleDateFormat") SimpleDateFormat sdFormat = new SimpleDateFormat(oldFormat);
+        Date validDate = sdFormat.parse(validTime.substring(0, 10));
+        sdFormat.applyPattern(newFormat);
+        return sdFormat.format(validDate);
     }
 
     private String getTime(String validTime) {
@@ -191,7 +193,6 @@ public class JSONParser {
     }
 
     private int getSymbol(int cloudValue, String time) {
-
         boolean isDay = Integer.parseInt(time.substring(0, 2)) > 5
                 && Integer.parseInt(time.substring(0, 2)) < 18;
         if (isDay) {
@@ -309,7 +310,7 @@ public class JSONParser {
                 case 26:
                     return R.drawable.night_26;
                 case 27:
-                    return R.drawable.night_17;
+                    return R.drawable.night_27;
                 default:
                     return R.drawable.night_1; //sun is always shining for default :)
             }
@@ -318,20 +319,23 @@ public class JSONParser {
 
     private String getWorkoutRecommendation(int cloudValue, double temperature, String fullTime) {
         String workoutRecommendation;
-        int time = Integer.parseInt(fullTime.substring(0,2));
-        if (cloudValue < 8 && temperature > 7 && time > 5 && time < 21)
-            workoutRecommendation = "Perfect time for a run!";//extract to string resource!!
+        int time = Integer.parseInt(fullTime.substring(0, 2));
+        if (cloudValue == 1 && time > 5 && time < 19)
+            workoutRecommendation = "Sun's out, guns out!";
+        else if (cloudValue < 8 && temperature > 7 && time > 5 && time < 21)
+            workoutRecommendation = "Good time for a ride!";//extract to string resource!!
         else if (cloudValue < 8 && temperature < 8 && time > 5 && time < 21)
-            workoutRecommendation = "Never too cold for a ride!";
-        else if (cloudValue > 7 && time > 5 && time < 21)
+            workoutRecommendation = "Never too cold for a run!";
+        else if (cloudValue > 7 && cloudValue < 11 && time > 5 && time < 21)
             workoutRecommendation = "Good time for a pool swim!";
+        else if (cloudValue > 10 && time > 5 && time < 21)
+            workoutRecommendation = "Good time for a home workout!";
         else if (time < 6 || time > 20)
             workoutRecommendation = "Work hard, rest harder!";
         else
             workoutRecommendation = "Always a good idea to work out";
         return workoutRecommendation;
     }
-
 }
 
 

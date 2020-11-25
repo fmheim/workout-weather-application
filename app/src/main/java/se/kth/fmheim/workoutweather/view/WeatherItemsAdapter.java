@@ -17,7 +17,6 @@ import se.kth.fmheim.workoutweather.data.Weather;
 
 public class WeatherItemsAdapter extends RecyclerView.Adapter<WeatherItemsAdapter.WeatherItemsViewHolder> {
     private ArrayList<WeatherItem> mWeatherItemList;
-   private List<Weather> mWeatherData = new ArrayList<>();
 
     public static class WeatherItemsViewHolder extends RecyclerView.ViewHolder {
 
@@ -44,20 +43,14 @@ public class WeatherItemsAdapter extends RecyclerView.Adapter<WeatherItemsAdapte
     */
     public WeatherItemsAdapter(ArrayList<WeatherItem> weatherItemsList) {
         /*
-        When adapter is created List of WeatherItems is passed to member variable mWeatherItemList
+        When adapter is created List of WeatherItems is passed
+        to member variable mWeatherItemList
          */
         mWeatherItemList = weatherItemsList;
-    }
-    public WeatherItemsAdapter() {
-        /*
-        When adapter empty constructor
-         */
-
     }
 
     @NonNull
     @Override
-
     public WeatherItemsViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         /*
         pass weather_item layout to adapter
@@ -75,10 +68,6 @@ public class WeatherItemsAdapter extends RecyclerView.Adapter<WeatherItemsAdapte
         holder.mTextDate.setText(currentItem.getTextDate());
         holder.mTextTemperature.setText(currentItem.getTextTemperature());
         holder.mTextWorkout.setText(currentItem.getTextWorkout());
-    }
-    public void setWeatherData(List<Weather> weatherData){
-        mWeatherData = weatherData;
-        notifyDataSetChanged();
     }
 
     @Override

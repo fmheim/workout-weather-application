@@ -1,5 +1,8 @@
 package se.kth.fmheim.workoutweather.view;
-
+    /*
+    View Model that survives entire life cycle
+    Using AndroidViewModel to pass Application Context!
+    */
 import android.app.Application;
 import android.util.Log;
 
@@ -12,28 +15,19 @@ import se.kth.fmheim.workoutweather.data.WeatherRepository;
 import se.kth.fmheim.workoutweather.data.Weather;
 
 public class WeatherViewModel extends AndroidViewModel {
-    /*
-    View Model that survives entire life cycle
-    Using AndroidViewModel to pass Application Context!
-    */
+
     private static final String LOG_TAG = WeatherViewModel.class.getSimpleName();
-    private final WeatherRepository mRepository;
-
     private final LiveData<List<Weather>> mWeatherLiveData;
-
 
     public WeatherViewModel(Application application) {
         super(application);
         Log.d(LOG_TAG, "ViewModel Constructor");
-        mRepository = new WeatherRepository(application);
-        mWeatherLiveData = mRepository.getLiveWeatherData();
-
-
+        WeatherRepository repository = new WeatherRepository(application);
+        mWeatherLiveData = repository.getLiveWeatherData();
     }
 
     public LiveData<List<Weather>> getWeatherLiveData() {
         return mWeatherLiveData;
     }
-
 }
 
